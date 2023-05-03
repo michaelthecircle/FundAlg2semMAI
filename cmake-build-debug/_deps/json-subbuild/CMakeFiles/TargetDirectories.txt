@@ -1,0 +1,3 @@
+/Users/admin/Documents/labs irb/lab 5/zad 1/cmake-build-debug/_deps/json-subbuild/CMakeFiles/json-populate.dir
+/Users/admin/Documents/labs irb/lab 5/zad 1/cmake-build-debug/_deps/json-subbuild/CMakeFiles/edit_cache.dir
+/Users/admin/Documents/labs irb/lab 5/zad 1/cmake-build-debug/_deps/json-subbuild/CMakeFiles/rebuild_cache.dir
