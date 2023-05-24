@@ -1,7 +1,12 @@
-[debug][date 3 11:46:13]Memory state after allocation operation: |occpd 149|avlbl 827|
-[debug][date 3 11:46:13]Memory state after allocation operation: |occpd 149|occpd 112|avlbl 707|
-[debug][date 3 11:46:13]Memory state after allocation operation: |occpd 149|occpd 112|occpd 135|avlbl 564|
-[debug][date 3 11:46:13]Memory state after allocation operation: |occpd 149|occpd 112|occpd 135|occpd 146|avlbl 410|
-[debug][date 3 11:46:13]Memory state after allocation operation: |occpd 149|occpd 112|occpd 135|occpd 146|occpd 51|avlbl 351|
-[debug][date 3 11:46:13]Memory state after allocation operation: |occpd 149|occpd 112|occpd 135|occpd 146|occpd 51|occpd 140|avlbl 203|
-[debug][date 3 11:46:13]Memory state after allocation operation: |occpd 149|occpd 112|occpd 135|occpd 146|occpd 51|occpd 140|occpd 134|avlbl 61|
+[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 149|avlbl 827|
+[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 984|
+[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|avlbl 864|
+[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|occpd 135|avlbl 721|
+[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|occpd 135|occpd 146|avlbl 567|
+[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|occpd 135|occpd 146|occpd 51|avlbl 508|
+[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|occpd 135|occpd 146|occpd 51|occpd 140|avlbl 360|
+[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 104|occpd 135|occpd 146|occpd 51|occpd 140|avlbl 360|
+[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 247|occpd 146|occpd 51|occpd 140|avlbl 360|
+[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 401|occpd 51|occpd 140|avlbl 360|
+[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 460|occpd 140|avlbl 360|
+[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 984|

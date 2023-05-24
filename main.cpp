@@ -59,7 +59,6 @@ int main()
         all1->deallocate(*it);
         allocated_blocks.erase(it);
     }
-    //test1(all1);
     delete all1;
     delete log_m;
     delete build;

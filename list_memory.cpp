@@ -216,31 +216,68 @@ void* list_memory::allocate(size_t block_size) const{
 
 void list_memory::deallocate(void * const block_pointer)const
 {
-    if (block_pointer == nullptr)
+    void* true_block_pointer = reinterpret_cast<void*>(reinterpret_cast<size_t*>(const_cast<void*>(block_pointer)) - 1);
+    auto current_block = get_first_aviable_block();
+
+    if ((true_block_pointer < reinterpret_cast<unsigned char *>(_memory) + get_service_part_allocator_size()) || (true_block_pointer >= reinterpret_cast<unsigned char *>(get_right_border_of_memory_ptr()) - get_service_part_occupied_block_size() - sizeof(void *)))
     {
         throw memory::dealloc_fail();
     }
-    if ((block_pointer < get_first_aviable_block()) || (block_pointer > get_right_border_of_memory_ptr())) // >= get_right????
+    void* prev_block = nullptr;
+
+    while (current_block < block_pointer)
     {
-        throw memory::dealloc_fail();
+        prev_block = current_block;
+        current_block = get_next_aviable_block(current_block);
     }
-    void* current_block = get_first_aviable_block();
-    void* right_block = nullptr;
-    while (current_block != nullptr)
+
+    auto block_to_deallocate_size = *reinterpret_cast<size_t *>(true_block_pointer);
+    if (prev_block == nullptr && current_block == nullptr)
     {
-        void* next_block = get_next_aviable_block(current_block);
-        if (next_block > block_pointer)
-        {
-            right_block = next_block;
-            break;
-        }
-        else if (next_block == nullptr)
-        {
-            break;
-        }
-        current_block = next_block;
+        *reinterpret_cast<void**>(true_block_pointer) = nullptr;
+        block_to_deallocate_size = *reinterpret_cast<size_t*>(reinterpret_cast<void**>(true_block_pointer) + 1) = block_to_deallocate_size - sizeof(void*);
+        *get_first_aviable_block_ptr() = true_block_pointer;
     }
-    size_t deallocated_block_size = get_occupied_block_size(block_pointer);
+    else
+    {
+        if (current_block == nullptr)
+        {
+            *reinterpret_cast<void **>(true_block_pointer) = nullptr;
+            block_to_deallocate_size = *reinterpret_cast<size_t *>(reinterpret_cast<void **>(true_block_pointer) + 1) = block_to_deallocate_size - sizeof(void *);
+        }
+        else
+        {
+            if (reinterpret_cast<unsigned char *>(block_pointer) + block_to_deallocate_size == current_block)
+            {
+                *reinterpret_cast<void**>(true_block_pointer) = get_next_aviable_block(current_block);
+                block_to_deallocate_size = *reinterpret_cast<size_t *>(reinterpret_cast<void **>(true_block_pointer) + 1) = sizeof(size_t) + block_to_deallocate_size + get_current_aviable_block_size(current_block);
+                current_block = true_block_pointer;
+            }
+            else
+            {
+                *reinterpret_cast<void **>(true_block_pointer) = current_block;
+                block_to_deallocate_size = *reinterpret_cast<size_t *>(reinterpret_cast<void **>(true_block_pointer) + 1) = block_to_deallocate_size - sizeof(void *);
+            }
+        }
+
+        if (prev_block == nullptr)
+        {
+            *get_first_aviable_block_ptr() = true_block_pointer;
+        }
+        else
+        {
+            auto prev_block_size = get_current_aviable_block_size(prev_block);
+            if (reinterpret_cast<unsigned char *>(prev_block) + get_service_part_aviable_block_size() + prev_block_size == true_block_pointer)
+            {
+                *reinterpret_cast<void **>(prev_block) = get_next_aviable_block(true_block_pointer);
+                *reinterpret_cast<size_t *>(reinterpret_cast<void **>(prev_block) + 1) = prev_block_size + block_to_deallocate_size + get_service_part_aviable_block_size();
+            }
+            else
+            {
+                *reinterpret_cast<void **>(prev_block) = true_block_pointer;
+            }
+        }
+    }
 
     dump_allocator_state(false);
 }
