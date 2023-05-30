@@ -30,9 +30,10 @@ public:
     virtual void* get_next_aviable_block(void*) const;
     virtual size_t get_service_part_aviable_block_size()const;
     virtual size_t get_service_part_occupied_block_size()const;
-    virtual size_t get_service_part_allocator_size() const = 0;
+    virtual size_t get_service_part_allocator_size() const{return 0;}
+    virtual void log_of_changed_size() const{};
 public:
     virtual ~memory() noexcept;
 };
-
+//for memory_mihuil changed get_service and log_of_changed_size to virtual from pure virtual
 #endif //_MEMORY

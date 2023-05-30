@@ -1,9 +1,9 @@
-#include "memory.h"
-#include "logger.h"
-#include "logger_holder.h"
-#include <stddef.h>
-#include "typename_holder.h"
-#include "not_implemented.h"
+#include "./memory.h"
+#include "./logger/logger.h"
+#include "./logger/logger_holder.h"
+#include <cstddef>
+#include "./typename_holder.h"
+#include "../not_implemented.h"
 
 class list_memory final: public memory, private typename_holder, private logger_holder
 {
@@ -23,6 +23,7 @@ private:
     std::string get_typename() const noexcept override;
     void dump_allocator_state(bool is_allocate) const noexcept;
     size_t get_service_part_allocator_size() const override;
+    void log_of_changed_size() const override;
 private:
     void* _memory;
 public:

@@ -129,7 +129,15 @@ size_t list_memory::get_occupied_block_size(void * const current_block_address) 
     return *reinterpret_cast<size_t*>(current_block_address);
 }
 
-
+void list_memory::log_of_changed_size() const
+{
+    auto *log = get_logger();
+    if (log == nullptr)
+    {
+        return;
+    }
+    log->log(std::string("size has changed"), logger::severity::debug);
+}
 
 void* list_memory::allocate(size_t block_size) const{
     auto overridden_block_size = block_size;
@@ -185,8 +193,7 @@ void* list_memory::allocate(size_t block_size) const{
 
     if (overridden_block_size != block_size)
     {
-        // TODO: logs size has changed
-        //this->debug_with_guard();
+        list_memory::log_of_changed_size();
         block_size = overridden_block_size;
     }
 

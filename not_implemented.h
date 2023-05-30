@@ -1,3 +1,5 @@
+#ifndef abobus
+#define abobus
 #include <iostream>
 
 class not_implemented final : public std::exception
@@ -8,3 +10,4 @@ public:
         return "Method not implemented";
     }
 };
+#endif

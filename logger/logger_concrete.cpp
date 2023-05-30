@@ -73,7 +73,7 @@ logger const *logger_concrete::log(
         {
             continue;
         }
-        std::string cur_time_string = "[date " +  std::to_string(time_struct->tm_mday) +" "+ std::to_string(time_struct->tm_hour) +":"+
+        std::string cur_time_string = "[" + std::to_string(time_struct->tm_mday) + "." + std::to_string(time_struct->tm_mon) + "." + std::to_string(time_struct->tm_year + 1900) + " " + std::to_string(time_struct->tm_hour) +":"+
                                       std::to_string(time_struct->tm_min) +":"+std::to_string(time_struct->tm_sec) + "]";
         if (logger_stream.second.first == nullptr)
         {

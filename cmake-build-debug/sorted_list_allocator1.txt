@@ -1,12 +1,12 @@
-[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 149|avlbl 827|
-[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 984|
-[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|avlbl 864|
-[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|occpd 135|avlbl 721|
-[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|occpd 135|occpd 146|avlbl 567|
-[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|occpd 135|occpd 146|occpd 51|avlbl 508|
-[debug][date 24 20:55:54]Memory state after allocation operation: |occpd 112|occpd 135|occpd 146|occpd 51|occpd 140|avlbl 360|
-[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 104|occpd 135|occpd 146|occpd 51|occpd 140|avlbl 360|
-[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 247|occpd 146|occpd 51|occpd 140|avlbl 360|
-[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 401|occpd 51|occpd 140|avlbl 360|
-[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 460|occpd 140|avlbl 360|
-[debug][date 24 20:55:54]Memory state after deallocation operation: |avlbl 984|
+[debug][29.4.2023 21:15:56]Memory state after allocation operation: |occpd 333|avlbl 999643|
+[debug][29.4.2023 21:15:56]Memory state after deallocation operation: |avlbl 999984|
+[debug][29.4.2023 21:15:56]Memory state after allocation operation: |occpd 220|avlbl 999756|
+[debug][29.4.2023 21:15:56]Memory state after allocation operation: |occpd 220|occpd 277|avlbl 999471|
+[debug][29.4.2023 21:15:56]Memory state after allocation operation: |occpd 220|occpd 277|occpd 227|avlbl 999236|
+[debug][29.4.2023 21:15:56]Memory state after allocation operation: |occpd 220|occpd 277|occpd 227|occpd 276|avlbl 998952|
+[debug][29.4.2023 21:15:56]Memory state after allocation operation: |occpd 220|occpd 277|occpd 227|occpd 276|occpd 334|avlbl 998610|
+[debug][29.4.2023 21:15:56]Memory state after deallocation operation: |avlbl 212|occpd 277|occpd 227|occpd 276|occpd 334|avlbl 998610|
+[debug][29.4.2023 21:15:56]Memory state after deallocation operation: |avlbl 497|occpd 227|occpd 276|occpd 334|avlbl 998610|
+[debug][29.4.2023 21:15:56]Memory state after deallocation operation: |avlbl 732|occpd 276|occpd 334|avlbl 998610|
+[debug][29.4.2023 21:15:56]Memory state after deallocation operation: |avlbl 1016|occpd 334|avlbl 998610|
+[debug][29.4.2023 21:15:56]Memory state after deallocation operation: |avlbl 999984|

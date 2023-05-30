@@ -1,67 +1,28 @@
-#include "logger.h"
-#include "logger_builder_concrete.h"
-#include "list_memory.h"
+#include "logger/logger.h"
+#include "logger/logger_builder_concrete.h"
+#include "alloc_list/list_memory.h"
 #include <list>
 
+#include "./alloc_new_delete/memory_mihuil.h"
+#include "./kursach_puk_puk/binary_search_tree.h"
+#include "./b_plus_tree//associative_container.h"
+#include "./kursach_puk_puk/database.h"
 int main()
 {
-    logger_builder* build = new logger_builder_concrete();
-    logger* log_m = build
-            ->add_stream("sorted_list_allocator1.txt", logger::severity::trace)
+    logger_builder* build_mem = new logger_builder_concrete();
+    logger* log_m = build_mem
+            ->add_stream("memory.txt", logger::severity::trace)
             ->construct();
-    memory* all1 = new list_memory(1000, memory::allocation_mode::first_fit, log_m);
-    std::list<void *> allocated_blocks;
-    //srand((unsigned)time(nullptr));
-    srand(0);
-    // std::cout<< sizeof(size_t) << " - size of size_t " << sizeof(void*) << " - size of void* " << std::endl; 8 8
-    for (int i = 0; i < 10; i++)
-    {
-        switch (rand() % 2)
-        {
-            case 0:
-                try
-                {
-                    //allocated_blocks.push_back(all1->allocate(rand() % 201 + 150));
-                    allocated_blocks.push_back(all1->allocate(rand() % 101 + 50));
-                }
-                catch (std::bad_alloc const &ex)
-                {
-                    std::cout << i << " allocate failed" << std::endl;
-                }
-                break;
-            case 1:
-                try
-                {
-                    if (allocated_blocks.empty())
-                    {
-                        std::cout << i << " nothing to deallocate" << std::endl;
-                        continue;
-                    }
-
-                    auto ptr_to_deallocate_index = rand() % allocated_blocks.size();
-                    auto it = allocated_blocks.begin();
-                    std::advance(it, ptr_to_deallocate_index);
-                    all1->deallocate(*it);
-                    allocated_blocks.erase(it);
-                }
-                catch (memory::dealloc_fail const &ex)
-                {
-                    std::cout << i << " deallocate failed" << std::endl;
-                }
-                break;
-        }
-    }
-    while (!allocated_blocks.empty())
-    {
-        auto ptr_to_deallocate_index = rand() % allocated_blocks.size();
-        auto it = allocated_blocks.begin();
-        std::advance(it, ptr_to_deallocate_index);
-        all1->deallocate(*it);
-        allocated_blocks.erase(it);
-    }
-    delete all1;
+    logger_builder* build_associative = new logger_builder_concrete();
+    logger* log_associative = build_associative
+            ->add_stream("associative.txt", logger::severity::trace)
+            ->construct();
+    memory* all_mem = new memory_mihuil(log_m);
+    memory* all_associative = new memory_mihuil(log_associative);
+    delete all_mem;
+    delete build_mem;
+    delete build_associative;
     delete log_m;
-    delete build;
     return 0;
 }
 

@@ -2,8 +2,8 @@
 #define SANDBOX_CPP_MEMORY_MIHUIL_H
 
 #include "memory.h"
-#include "logger.h"
-#include "logger_holder.h"
+#include "./logger/logger.h"
+#include "./logger/logger_holder.h"
 #include "typename_holder.h"
 
 class memory_mihuil final:
@@ -26,8 +26,8 @@ public:
     size_t get_occupied_block_size(
         void * const current_block_address) const override;
 
-    void * const allocate(
-        size_t block_size)override;
+    void * allocate(
+        size_t block_size) const override;
 
     void deallocate(
         void * const block_pointer) const override;

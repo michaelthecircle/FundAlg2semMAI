@@ -23,7 +23,7 @@ size_t memory_mihuil::get_occupied_block_size(
     return result;
 }
 
-void *const memory_mihuil::allocate(size_t block_size) const
+void *memory_mihuil::allocate(size_t block_size) const
 {
     auto got_typename = get_typename();
     this->trace_with_guard("Method `" + got_typename + "::allocate(size_t block_size) const` execution started");
