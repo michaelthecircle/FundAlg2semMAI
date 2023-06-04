@@ -2,9 +2,9 @@
 #include "logger/logger_builder_concrete.h"
 #include "alloc_list/list_memory.h"
 #include <list>
-
+#include "kursach_puk_puk/file_parcer.h"
 #include "./alloc_new_delete/memory_mihuil.h"
-#include "./kursach_puk_puk/binary_search_tree.h"
+#include "binary_search_tree/binary_search_tree.h"
 #include "./b_plus_tree//associative_container.h"
 #include "./kursach_puk_puk/database.h"
 int main()
@@ -19,6 +19,7 @@ int main()
             ->construct();
     memory* all_mem = new memory_mihuil(log_m);
     memory* all_associative = new memory_mihuil(log_associative);
+
     delete all_mem;
     delete build_mem;
     delete build_associative;

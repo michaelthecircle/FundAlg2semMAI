@@ -7,7 +7,7 @@
 #include "./memory.h"
 #include "definition_of_delivery.h"
 #include "trees_names.h"
-#include "stdstring_comparer.h"
+#include "comparers/stdstring_comparer.h"
 
 class collection:
         public delivery_member

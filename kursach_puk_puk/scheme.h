@@ -7,7 +7,7 @@
 #include "./memory.h"
 #include "trees_names.h"
 #include "collection.h"
-#include "stdstring_comparer.h"
+#include "comparers/stdstring_comparer.h"
 
 class scheme_collection
 {

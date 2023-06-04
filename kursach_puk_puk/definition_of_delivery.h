@@ -16,7 +16,7 @@ struct delivery_member
         };
         std::string surname;
         std::string name;
-        std::string patronimic;
+        std::string patronymic;
         std::string mail;
         std::string phone;
         std::string user_comment;

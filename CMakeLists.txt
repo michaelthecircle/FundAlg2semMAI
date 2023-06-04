@@ -25,12 +25,13 @@ add_executable(zad_1
         alloc_new_delete/memory_holder.h
         alloc_new_delete/memory_mihuil.cpp
         alloc_new_delete/memory_mihuil.h
-        kursach_puk_puk/binary_search_tree.h
+        binary_search_tree/binary_search_tree.h
         kursach_puk_puk/collection.h
         kursach_puk_puk/database.h
         kursach_puk_puk/definition_of_delivery.h
         kursach_puk_puk/scheme.h
-        kursach_puk_puk/stdstring_comparer.h
+        comparers/stdstring_comparer.h
         kursach_puk_puk/trees_names.h
+        kursach_puk_puk/file_parcer.h
         main.cpp)
 target_link_libraries(zad_1 PRIVATE nlohmann_json::nlohmann_json)
