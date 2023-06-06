@@ -21,7 +21,7 @@ class bplus_tree final:
 private:
 
     unsigned int _t;
-    static const search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode split_mode = search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp;
+    static const typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode split_mode = search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp;
 
 public:
 
@@ -150,7 +150,7 @@ public:
         iterate_tree_inner(search_tree<tkey, tvalue, tkey_comparer>::_root, 0);
     }
 
-    void iterate_tree_inner(search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *ptr, unsigned int tab)
+    void iterate_tree_inner(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *ptr, unsigned int tab)
     {
         if (ptr == nullptr)
         {

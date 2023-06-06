@@ -7,6 +7,7 @@
 #include "./memory.h"
 #include "./alloc_new_delete/memory_holder.h"
 #include <iostream>
+#include "./logger/logger_holder.h"
 
 template<
     typename tkey,
@@ -389,7 +390,7 @@ std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::searc
     }
     else
     {
-        new (node->keys_and_values + node->involved_keys) associative_container<tkey, tvalue>::key_value_pair;
+        new (node->keys_and_values + node->involved_keys) typename associative_container<tkey, tvalue>::key_value_pair;
 
         for (auto i = node->involved_keys; i > index_to_vacate; --i)
         {

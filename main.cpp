@@ -2,11 +2,9 @@
 #include "logger/logger_builder_concrete.h"
 #include "alloc_list/list_memory.h"
 #include <list>
-#include "kursach_puk_puk/file_parcer.h"
 #include "./alloc_new_delete/memory_mihuil.h"
 #include "binary_search_tree/binary_search_tree.h"
 #include "./b_plus_tree//associative_container.h"
-#include "./kursach_puk_puk/database.h"
 int main()
 {
     logger_builder* build_mem = new logger_builder_concrete();

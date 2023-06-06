@@ -6,8 +6,8 @@ template<typename trequest> class command
 public:
     virtual ~command() = default;
 public:
-    virtual bool can_execute(trequest const &) const noexcept = 0;
-    virtual void execute(trequest const &) const noexcept = 0;
+    virtual bool can_execute(trequest const &) noexcept = 0;
+    virtual void execute(trequest const &) noexcept = 0;
 };
 
 
