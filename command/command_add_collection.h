@@ -14,7 +14,6 @@ private:
     std::string _collection_name;
 public:
 
-
     bool can_execute(std::string const &request) noexcept final
     {
 

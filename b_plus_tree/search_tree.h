@@ -8,18 +8,19 @@
 #include "./alloc_new_delete/memory_holder.h"
 #include <iostream>
 #include "./logger/logger_holder.h"
+#include "./not_implemented.h"
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 class search_tree:
-    public associative_container<tkey, tvalue>,
-    public memory_holder,
-    public logger_holder
+        public associative_container<tkey, tvalue>,
+        protected memory_holder,
+        protected logger_holder
 {
 
-public:
+protected:
 
     struct search_tree_node
     {
@@ -35,11 +36,11 @@ public:
 
     };
 
-public:
+protected:
 
     class node_interaction_context:
-        public memory_holder,
-        public logger_holder
+            public memory_holder,
+            public logger_holder
     {
 
     public:
@@ -50,54 +51,65 @@ public:
             copy_median_kvp = 1
         };
 
-    public:
+    private:
 
-        search_tree<tkey, tvalue, tkey_comparer> *_target;
+        logger *_logger;
+        memory *_allocator;
 
     public:
 
         node_interaction_context(
-            search_tree<tkey, tvalue, tkey_comparer> *target)
-            : _target(target)
+                logger *logger,
+                memory *allocator)
+                : _logger(logger),
+                  _allocator(allocator)
         {
 
         }
 
     public:
 
-        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *create_node_shell(
-            unsigned int key_value_pairs_min_count);
+        virtual typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode get_split_mode() const;
 
-        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *clone_node_with_subtrees(
-            typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell);
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *create_node_shell(
+                unsigned int key_value_pairs_min_count);
+
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *copy_node(
+                typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell,
+                bool recursive);
+
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *copy_node_inner(
+                typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell,
+                bool recursive,
+                typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *&last_added_leaf,
+                typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode split_mode);
 
         void destroy_node(
-            typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell,
-            bool recursive = false);
+                typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell,
+                bool recursive);
 
         std::optional<std::pair<search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *, typename associative_container<tkey, tvalue>::key_value_pair> > shift(
-            typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node,
-            unsigned int index_to_vacate,
-            typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode split_mode,
-            tkey const &key,
-            tvalue &&value,
-            typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *vacation_right_subtree);
+                typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node,
+                unsigned int index_to_vacate,
+                tkey const &key,
+                tvalue &&value,
+                typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *vacation_right_subtree);
 
-    public:
+    protected:
 
         virtual size_t get_node_shell_size() const noexcept;
 
         virtual void node_constructor_call(
-            search_tree_node *allocated_memory) const noexcept;
+                typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *allocated_memory) const noexcept;
 
         virtual void node_additional_data_injector(
-            search_tree_node *initialized_memory) const noexcept;
+                typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *initialized_memory) const noexcept;
 
-    public:
+    protected:
 
         memory *get_memory() const noexcept final;
 
-    public:
+    protected:
 
         logger *get_logger() const noexcept final;
 
@@ -120,7 +132,7 @@ public:
 public:
 
     class insertion_exception final:
-        public std::exception
+            public std::exception
     {
 
     public:
@@ -130,7 +142,7 @@ public:
     };
 
     class reading_exception final:
-        public std::exception
+            public std::exception
     {
 
     public:
@@ -140,7 +152,7 @@ public:
     };
 
     class removing_exception final:
-        public std::exception
+            public std::exception
     {
 
     public:
@@ -149,27 +161,29 @@ public:
 
     };
 
-public:
+protected:
 
     search_tree_node *_root;
-    logger *_logger;
-    memory *_allocator;
     node_interaction_context *_context;
 
-public:
+private:
+
+    logger *_logger;
+    memory *_allocator;
+
+protected:
 
     explicit search_tree(
-        memory *allocator = nullptr,
-        logger *logger = nullptr)
-        : _allocator(allocator), _logger(logger), _context(new node_interaction_context(this))
+            node_interaction_context *context,
+            memory *allocator,
+            logger *logger)
+            : _context(context),
+              _allocator(allocator),
+              _logger(logger),
+              _root(nullptr)
     {
 
     }
-
-    explicit search_tree(
-        memory *allocator,
-        logger *logger,
-        node_interaction_context *context);
 
 public:
 
@@ -183,11 +197,20 @@ public:
 
     ~search_tree();
 
-public:
+protected:
+
+    virtual node_interaction_context *create_node_interaction_context(
+            logger *logger,
+            memory *allocator) const noexcept
+    {
+        return new node_interaction_context(logger, allocator);
+    }
+
+protected:
 
     memory *get_memory() const noexcept final;
 
-public:
+protected:
 
     logger *get_logger() const noexcept final;
 
@@ -198,11 +221,21 @@ public:
 // region search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context implementation
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
+typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::get_split_mode() const
+{
+    // TODO
+    throw not_implemented("node split mode not defined");
+}
+
+template<
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::create_node_shell(
-    unsigned int key_value_pairs_min_count)
+        unsigned int key_value_pairs_min_count)
 {
     auto key_value_pairs_max_count = key_value_pairs_min_count << 1;
 
@@ -210,7 +243,7 @@ typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *search_tree
     new (node_shell) typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node;
 
     node_shell->keys_and_values = reinterpret_cast<typename associative_container<tkey, tvalue>::key_value_pair *>(allocate_with_guard(sizeof(typename associative_container<tkey, tvalue>::key_value_pair) * key_value_pairs_max_count));
-    node_shell->subtrees = reinterpret_cast<search_tree<tkey, tvalue, tkey_comparer>::search_tree_node **>(allocate_with_guard(sizeof(search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *) * (key_value_pairs_max_count + 1)));
+    node_shell->subtrees = reinterpret_cast<search_tree<tkey, tvalue, tkey_comparer>::search_tree_node **>(allocate_with_guard(sizeof(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *) * (key_value_pairs_max_count + 1)));
     node_shell->min_keys_count = key_value_pairs_min_count;
     node_shell->involved_keys = 0;
 
@@ -218,77 +251,147 @@ typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *search_tree
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
-typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::clone_node_with_subtrees(
-    typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell)
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
+typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::copy_node(
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell,
+        bool recursive)
+{
+    typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *last_added_leaf = nullptr;
+    auto *copied_node_shell = copy_node_inner(node_shell, recursive, last_added_leaf, get_split_mode());
+
+    if (last_added_leaf != nullptr)
+    {
+        last_added_leaf->subtrees[last_added_leaf->involved_keys] = nullptr;
+    }
+
+    return copied_node_shell;
+}
+
+template<
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
+typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::copy_node_inner(
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell,
+        bool recursive,
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *&last_added_leaf,
+        typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode split_mode)
 {
     if (node_shell == nullptr)
     {
         return nullptr;
     }
 
-    auto *node_shell_copy = create_node_shell(node_shell->min_keys_count);
-    auto node_shell_max_keys_count = node_shell->min_keys_count << 1;
-
-    for (auto i = 0; i <= node_shell_max_keys_count; i++)
+    if (node_shell->subtrees[0] == nullptr && recursive)
     {
-        if (i != node_shell->min_keys_count)
+        return copy_node_inner(node_shell, false, last_added_leaf, split_mode);
+    }
+
+    auto *node_shell_copy = create_node_shell(node_shell->min_keys_count);
+    node_shell_copy->involved_keys = node_shell->involved_keys;
+
+    for (auto i = 0; i <= node_shell->involved_keys; i++)
+    {
+        if (i != node_shell->involved_keys)
         {
-           new (node_shell_copy->keys_and_values + i) typename associative_container<tkey, tvalue>::key_value_pair(node_shell_copy->keys_and_values[i]);
+            new (node_shell_copy->keys_and_values + i) typename associative_container<tkey, tvalue>::key_value_pair(node_shell->keys_and_values[i]);
         }
 
-        // TODO: копирование для B+ должно работать чуть иначе ._.
-        node_shell_copy->subtrees[i] = clone_node_with_subtrees(node_shell->subtrees[i]);
+        if (recursive)
+        {
+            switch (split_mode)
+            {
+                case search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::do_not_copy_median_kvp:
+                    node_shell_copy->subtrees[i] = copy_node_inner(node_shell->subtrees[i], recursive, last_added_leaf,
+                                                                   split_mode);
+                    break;
+                case search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp:
+                    if (i != node_shell->involved_keys || node_shell->subtrees[0] != nullptr)
+                    {
+                        node_shell_copy->subtrees[i] = copy_node_inner(node_shell->subtrees[i], recursive,
+                                                                       last_added_leaf,
+                                                                       split_mode);
+                    }
+                    break;
+            }
+        }
+
+        if (i == 0 && node_shell_copy->subtrees[0] == nullptr)
+        {
+            if (last_added_leaf != nullptr)
+            {
+                switch (split_mode)
+                {
+                    case search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::do_not_copy_median_kvp:
+                        last_added_leaf->subtrees[last_added_leaf->involved_keys] = nullptr;
+                        break;
+                    case search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp:
+                        last_added_leaf->subtrees[last_added_leaf->involved_keys] = node_shell_copy;
+                        break;
+                }
+            }
+
+            last_added_leaf = node_shell_copy;
+        }
     }
 
     return node_shell_copy;
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 void search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::destroy_node(
-    search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell,
-    bool recursive)
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node_shell,
+        bool recursive)
 {
     if (node_shell == nullptr)
     {
         return;
     }
 
-    // TODO: удаление узла с поддеревьями для B+ должно работать чуть иначе ._.
+    if (node_shell->subtrees[0] == nullptr && recursive)
+    {
+        destroy_node(node_shell, false);
+
+        return;
+    }
+
     if (recursive)
     {
         for (auto i = 0; i <= node_shell->involved_keys; i++)
         {
-            destroy_node(node_shell->subtrees + i, true);
+            destroy_node(node_shell->subtrees[i], true);
         }
     }
-    
+
     deallocate_with_guard(node_shell->subtrees);
     for (auto i = 0; i < node_shell->involved_keys; i++)
     {
-        node_shell->~search_tree_node();
+        //std::cout << "Removed key == " << node_shell->keys_and_values[i].key << ", value == \"" << node_shell->keys_and_values[i].value << '\"' << std::endl;
+        node_shell->keys_and_values[i].~key_value_pair();
     }
+
     deallocate_with_guard(node_shell->keys_and_values);
+    node_shell->~search_tree_node();
     deallocate_with_guard(node_shell);
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *, typename associative_container<tkey, tvalue>::key_value_pair> > search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::shift(
-    typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node,
-    unsigned int index_to_vacate,
-    typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode split_mode,
-    tkey const &key,
-    tvalue &&value,
-    typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *vacation_right_subtree)
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node,
+        unsigned int index_to_vacate,
+        tkey const &key,
+        tvalue &&value,
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *vacation_right_subtree)
 {
+    auto split_mode = get_split_mode();
     auto node_max_keys_count = node->min_keys_count << 1;
     if (node->involved_keys == node_max_keys_count)
     {
@@ -298,8 +401,8 @@ std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::searc
         }
 
         auto additional_size = node->subtrees[0] == nullptr
-            ? static_cast<int>(split_mode)
-            : 0;
+                               ? static_cast<int>(split_mode)
+                               : 0;
         auto *new_node_after_split = create_node_shell(node->min_keys_count);
         auto source_index = node->min_keys_count;
 
@@ -316,8 +419,8 @@ std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::searc
             else
             {
                 kvps[i] = std::move(node->keys_and_values[i - (i < index_to_vacate
-                    ? 0
-                    : 1)]);
+                                                               ? 0
+                                                               : 1)]);
             }
         }
 
@@ -332,15 +435,14 @@ std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::searc
             else
             {
                 subtrees[i + (i < index_to_vacate
-                    ? 0
-                    : 1)] = node->subtrees[i];
+                              ? 0
+                              : 1)] = node->subtrees[i];
             }
         }
 
         if (node->subtrees[0] == nullptr && split_mode == search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp)
         {
             subtrees[node->min_keys_count] = new_node_after_split;
-            //subtrees[node_max_keys_count + 1] = node->subtrees[node->involved_keys];
         }
 
         for (auto i = 0; i <= node_max_keys_count; i++)
@@ -353,15 +455,15 @@ std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::searc
             else if (i == node->min_keys_count)
             {
                 if (split_mode ==
-                         search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::do_not_copy_median_kvp)
+                    search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::do_not_copy_median_kvp)
                 {
                     node->subtrees[i] = subtrees[i];
                 }
                 else if (split_mode ==
-                    search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp)
+                         search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp)
                 {
                     new (new_node_after_split->keys_and_values) typename search_tree<tkey, tvalue, tkey_comparer>::key_value_pair(
-                        kvps[i]);
+                            kvps[i]);
                     node->subtrees[i] = subtrees[i];
                     new_node_after_split->subtrees[0] = nullptr;
                 }
@@ -380,18 +482,17 @@ std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::searc
 
         typename associative_container<tkey, tvalue>::key_value_pair result;
         result.key = split_mode == search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp
-            ? std::move(kvps[node->min_keys_count].key)
-            : kvps[node->min_keys_count].key;
+                     ? std::move(kvps[node->min_keys_count].key)
+                     : kvps[node->min_keys_count].key;
         result.value = split_mode == search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp
-            ? std::move(kvps[node->min_keys_count].value)
-            : kvps[node->min_keys_count].value;
+                       ? std::move(kvps[node->min_keys_count].value)
+                       : kvps[node->min_keys_count].value;
 
         return std::make_optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *, typename associative_container<tkey, tvalue>::key_value_pair> >(std::make_pair<typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *, typename associative_container<tkey, tvalue>::key_value_pair>(std::move(new_node_after_split), std::move(result)));
     }
     else
     {
         new (node->keys_and_values + node->involved_keys) typename associative_container<tkey, tvalue>::key_value_pair;
-
         for (auto i = node->involved_keys; i > index_to_vacate; --i)
         {
             node->keys_and_values[i].key = node->keys_and_values[i - 1].key;
@@ -409,27 +510,27 @@ std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::searc
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 size_t search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::get_node_shell_size() const noexcept
 {
     return sizeof(search_tree<tkey, tvalue, tkey_comparer>::search_tree_node);
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 void search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_constructor_call(
-    typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *allocated_memory) const noexcept
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *allocated_memory) const noexcept
 {
     new (allocated_memory) search_tree<tkey, tvalue, tkey_comparer>::search_tree_node;
 }
 
 template<typename tkey, typename tvalue, typename tkey_comparer>
 void search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_additional_data_injector(
-    search_tree::search_tree_node *initialized_memory) const noexcept
+        search_tree::search_tree_node *initialized_memory) const noexcept
 {
 
 }
@@ -437,12 +538,12 @@ void search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_ad
 // region logger_holder implementation
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 logger *search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::get_logger() const noexcept
 {
-    return _target->get_logger();
+    return _logger;
 }
 
 // endregion logger_holder implementation
@@ -450,12 +551,12 @@ logger *search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::get_
 // region memory_holder implementation
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 memory *search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::get_memory() const noexcept
 {
-    return _target->get_memory();
+    return _allocator;
 }
 
 // endregion memory_holder implementation
@@ -465,27 +566,27 @@ memory *search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::get_
 // region exceptions overrides
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 char const *search_tree<tkey, tvalue, tkey_comparer>::insertion_exception::what() const noexcept
 {
     return "key to insert by is already exists in tree";
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 char const *search_tree<tkey, tvalue, tkey_comparer>::reading_exception::what() const noexcept
 {
     return "key to read by not exists inside tree";
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 char const *search_tree<tkey, tvalue, tkey_comparer>::removing_exception::what() const noexcept
 {
     return "key to remove by not exists inside tree";
@@ -493,41 +594,24 @@ char const *search_tree<tkey, tvalue, tkey_comparer>::removing_exception::what()
 
 // endregion exception overrides
 
-// region constructors
-
-template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
-search_tree<tkey, tvalue, tkey_comparer>::search_tree(
-    memory *allocator,
-    logger *logger,
-    node_interaction_context *context)
-    : _root(nullptr),
-      _allocator(allocator),
-      _logger(logger),
-      _context(context)
-{
-
-}
-
-// endregion constructors
-
 // region rule of 5 implementation
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 search_tree<tkey, tvalue, tkey_comparer>::search_tree(search_tree<tkey, tvalue, tkey_comparer> const &other)
 {
-    // TODO
+    _allocator = other._allocator;
+    _logger = other._logger;
+    _context = other.create_node_interaction_context(_logger, _allocator);
+    _root = _context->copy_node(other._root, true);
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 search_tree<tkey, tvalue, tkey_comparer> &search_tree<tkey, tvalue, tkey_comparer>::operator=(search_tree<tkey, tvalue, tkey_comparer> const &other)
 {
     if (this == &other)
@@ -535,24 +619,41 @@ search_tree<tkey, tvalue, tkey_comparer> &search_tree<tkey, tvalue, tkey_compare
         return *this;
     }
 
-    // TODO
+    _context->destroy_node(_root, true);
+    delete _context;
+
+    _allocator = other._allocator;
+    _logger = other._logger;
+    _context = other.create_node_interaction_context(_logger, _allocator);
+
+    _root = _context->copy_node(other._root, true);
 
     return *this;
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 search_tree<tkey, tvalue, tkey_comparer>::search_tree(search_tree<tkey, tvalue, tkey_comparer> &&other) noexcept
 {
-    // TODO
+    _context = other._context;
+    other._context = nullptr;
+
+    _logger = other._logger;
+    other._logger = nullptr;
+
+    _allocator = other._allocator;
+    other._allocator = nullptr;
+
+    _root = other._root;
+    other._root = nullptr;
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 search_tree<tkey, tvalue, tkey_comparer> &search_tree<tkey, tvalue, tkey_comparer>::operator=(search_tree<tkey, tvalue, tkey_comparer> &&other) noexcept
 {
     if (this == &other)
@@ -560,18 +661,31 @@ search_tree<tkey, tvalue, tkey_comparer> &search_tree<tkey, tvalue, tkey_compare
         return *this;
     }
 
-    // TODO
+    _context->destroy_node(_root, true);
+    delete _context;
+
+    _context = other._context;
+    other._context = nullptr;
+
+    _logger = other._logger;
+    other._logger = nullptr;
+
+    _allocator = other._allocator;
+    other._allocator = nullptr;
+
+    _root = other._root;
+    other._root = nullptr;
 
     return *this;
 }
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 search_tree<tkey, tvalue, tkey_comparer>::~search_tree()
 {
-    // TODO: delete all nodes
+    _context->destroy_node(_root, true);
     delete _context;
 }
 
@@ -580,9 +694,9 @@ search_tree<tkey, tvalue, tkey_comparer>::~search_tree()
 // region logger_holder implementation
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 logger *search_tree<tkey, tvalue, tkey_comparer>::get_logger() const noexcept
 {
     return _logger;
@@ -593,9 +707,9 @@ logger *search_tree<tkey, tvalue, tkey_comparer>::get_logger() const noexcept
 // region memory_holder implementation
 
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 memory *search_tree<tkey, tvalue, tkey_comparer>::get_memory() const noexcept
 {
     return _allocator;

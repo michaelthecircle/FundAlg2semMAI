@@ -10,27 +10,62 @@
 #include "./memory.h"
 #include "./alloc_new_delete/memory_holder.h"
 
+
+
 template<
-    typename tkey,
-    typename tvalue,
-    typename tkey_comparer>
+        typename tkey,
+        typename tvalue,
+        typename tkey_comparer>
 class bplus_tree final:
-    public search_tree<tkey, tvalue, tkey_comparer>
+        public search_tree<tkey, tvalue, tkey_comparer>
 {
 
 private:
 
+    class bplus_tree_node_interaction_context final:
+            public search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context
+    {
+
+    public:
+
+        bplus_tree_node_interaction_context(
+                logger *logger,
+                memory *allocator)
+                : search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context(logger, allocator)
+        {
+
+        }
+
+    public:
+
+        typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode get_split_mode() const noexcept override
+        {
+            return search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp;
+        }
+
+    };
+
+private:
+
     unsigned int _t;
-    static const typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode split_mode = search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::node_split_mode::copy_median_kvp;
+
+private:
+
+    typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context *create_node_interaction_context(
+            logger *logger,
+            memory *allocator) const noexcept override
+    {
+        return new bplus_tree_node_interaction_context(logger, allocator);
+    }
 
 public:
 
     explicit bplus_tree(
-        unsigned int t,
-        memory *allocator = nullptr,
-        logger *logger = nullptr)
-        : search_tree<tkey, tvalue, tkey_comparer>(allocator, logger, new typename search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context(this)),
-          _t(t)
+            unsigned int t,
+            memory *allocator = nullptr,
+            logger *logger = nullptr)
+            : search_tree<tkey, tvalue, tkey_comparer>(create_node_interaction_context(logger, allocator), allocator, logger),
+              _t(t)
     {
 
     }
@@ -38,8 +73,9 @@ public:
 public:
 
     bplus_tree(bplus_tree<tkey, tvalue, tkey_comparer> const &other)
+            : search_tree<tkey, tvalue, tkey_comparer>(other), _t(other._t)
     {
-        // TODO
+
     }
 
     bplus_tree<tkey, tvalue, tkey_comparer> &operator=(bplus_tree<tkey, tvalue, tkey_comparer> const &other)
@@ -49,14 +85,16 @@ public:
             return *this;
         }
 
-        // TODO
+        static_cast<search_tree<tkey, tvalue, tkey_comparer> &>(*this) = other;
+        _t = other._t;
 
         return *this;
     }
 
     bplus_tree(bplus_tree<tkey, tvalue, tkey_comparer> &&other) noexcept
+            : search_tree<tkey, tvalue, tkey_comparer>(std::move(other)), _t(other._t)
     {
-        // TODO
+        other._t = 0;
     }
 
     bplus_tree<tkey, tvalue, tkey_comparer> &operator=(bplus_tree<tkey, tvalue, tkey_comparer> &&other) noexcept
@@ -66,7 +104,9 @@ public:
             return *this;
         }
 
-        // TODO
+        static_cast<search_tree<tkey, tvalue, tkey_comparer> &>(*this) = std::move(other);
+        _t = other._t;
+        other._t = 0;
 
         return *this;
     }
@@ -76,9 +116,9 @@ public:
 private:
 
     std::tuple<std::stack<typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *>,
-               typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node **,
-               unsigned int,
-               bool> find_path(tkey const &key)
+            typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node **,
+            unsigned int,
+            bool> find_path(tkey const &key)
     {
         std::stack<typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *> path;
         typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node **iterator = &(search_tree<tkey, tvalue, tkey_comparer>::_root);
@@ -150,71 +190,71 @@ public:
         iterate_tree_inner(search_tree<tkey, tvalue, tkey_comparer>::_root, 0);
     }
 
-    void iterate_tree_inner(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *ptr, unsigned int tab)
-    {
-        if (ptr == nullptr)
-        {
-            return;
-        }
+    //void iterate_tree_inner(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *ptr, unsigned int tab)
+    //{
+    //    if (ptr == nullptr)
+    //    {
+    //        return;
+    //    }
+//
+    //    for (auto j = 0; j < tab; j++)
+    //    {
+    //        std::cout << "  ";
+    //    }
+    //    std::cout << "[ ";
+//
+    //    for (auto i = 0; i < ptr->involved_keys; i++)
+    //    {
+    //        std::cout << '{' << ptr->keys_and_values[i].key << " " << ptr->keys_and_values[i].value << "} ";
+    //    }
+//
+    //    std::cout << ']' << std::endl;
+    //    if (ptr->subtrees[0] != nullptr)
+    //    {
+    //        for (auto i = 0; i <= ptr->involved_keys; i++)
+    //        {
+    //            iterate_tree_inner(ptr->subtrees[i], tab + 1);
+    //        }
+    //    }
+    //}
 
-        for (auto j = 0; j < tab; j++)
-        {
-            std::cout << "  ";
-        }
-        std::cout << "[ ";
-
-        for (auto i = 0; i < ptr->involved_keys; i++)
-        {
-            std::cout << '{' << ptr->keys_and_values[i].key << " " << ptr->keys_and_values[i].value << "} ";
-        }
-
-        std::cout << ']' << std::endl;
-        if (ptr->subtrees[0] != nullptr)
-        {
-            for (auto i = 0; i <= ptr->involved_keys; i++)
-            {
-                iterate_tree_inner(ptr->subtrees[i], tab + 1);
-            }
-        }
-    }
-
-    void iterate_terminal_nodes_list()
-    {
-        auto *ptr = search_tree<tkey, tvalue, tkey_comparer>::_root;
-        while (ptr->subtrees[0] != nullptr)
-        {
-            ptr = ptr->subtrees[0];
-        }
-        std::cout << "[ ";
-        while (true)
-        {
-            std::cout << "[";
-            for (auto i = 0; i < ptr->involved_keys; i++)
-            {
-                std::cout << ptr->keys_and_values[i].key;
-                if (i != ptr->involved_keys - 1)
-                {
-                    std::cout << ", ";
-                }
-            }
-            std::cout << "]";
-
-            ptr = ptr->subtrees[ptr->involved_keys];
-            if (ptr != nullptr)
-            {
-                std::cout << ", ";
-            }
-            else
-            {
-                std::cout << ']';
-                break;
-            }
-        }
-    }
+    //void iterate_terminal_nodes_list()
+    //{
+    //    auto *ptr = search_tree<tkey, tvalue, tkey_comparer>::_root;
+    //    while (ptr->subtrees[0] != nullptr)
+    //    {
+    //        ptr = ptr->subtrees[0];
+    //    }
+    //    std::cout << "[ ";
+    //    while (true)
+    //    {
+    //        std::cout << "[";
+    //        for (auto i = 0; i < ptr->involved_keys; i++)
+    //        {
+    //            std::cout << ptr->keys_and_values[i].key;
+    //            if (i != ptr->involved_keys - 1)
+    //            {
+    //                std::cout << ", ";
+    //            }
+    //        }
+    //        std::cout << "]";
+//
+    //        ptr = ptr->subtrees[ptr->involved_keys];
+    //        if (ptr != nullptr)
+    //        {
+    //            std::cout << ", ";
+    //        }
+    //        else
+    //        {
+    //            std::cout << " ]";
+    //            break;
+    //        }
+    //    }
+    //}
 
     void insert(
-        tkey const &key,
-        tvalue &&value) override
+            tkey const &key,
+            tvalue &&value) override
     {
         auto path_info = find_path(key);
         if (std::get<3>(path_info))
@@ -236,9 +276,9 @@ public:
 private:
 
     std::optional<std::tuple<typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *, typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *, tkey> > insert_inner(
-        tkey const &key,
-        tvalue &&value,
-        std::tuple<std::stack<typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *>, typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node **, unsigned int, bool> path_info)
+            tkey const &key,
+            tvalue &&value,
+            std::tuple<std::stack<typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *>, typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node **, unsigned int, bool> path_info)
     {
         auto **target_ptr = std::get<1>(path_info);
 
@@ -257,7 +297,7 @@ private:
         auto path_to_target = std::get<0>(path_info);
         auto target_index = std::get<2>(path_info);
 
-        auto result = search_tree<tkey, tvalue, tkey_comparer>::_context->shift(*target_ptr, target_index, split_mode, key, std::move(value), (*target_ptr)->subtrees[(*target_ptr)->involved_keys]);
+        auto result = search_tree<tkey, tvalue, tkey_comparer>::_context->shift(*target_ptr, target_index, key, std::move(value), (*target_ptr)->subtrees[(*target_ptr)->involved_keys]);
         if (!result.has_value())
         {
             return std::nullopt;
@@ -272,7 +312,6 @@ private:
             parent = path_to_target.top();
             path_to_target.pop();
 
-
             auto index = 0;
             for (; index < parent->involved_keys; index++)
             {
@@ -282,7 +321,7 @@ private:
                 }
             }
 
-            result = search_tree<tkey, tvalue, tkey_comparer>::_context->shift(parent, index, split_mode, result.value().second.key, std::move(value), result.value().first);
+            result = search_tree<tkey, tvalue, tkey_comparer>::_context->shift(parent, index, result.value().second.key, std::move(value), result.value().first);
             if (!result.has_value())
             {
                 return std::nullopt;
@@ -295,7 +334,7 @@ private:
 public:
 
     tvalue const &get(
-        tkey const &key) override
+            tkey const &key) override
     {
         auto path_info = find_path(key);
         if (!std::get<3>(path_info))
@@ -306,8 +345,42 @@ public:
         return (*std::get<1>(path_info))->keys_and_values[std::get<2>(path_info)].value;
     }
 
+    std::vector<typename associative_container<tkey, tvalue>::key_value_pair> get_in_range(
+            tkey const &lower_bound_inclusive,
+            tkey const &upper_bound_inclusive) override
+    {
+        tkey_comparer comparer;
+        if (comparer(lower_bound_inclusive, upper_bound_inclusive) > 0)
+        {
+            return std::vector<typename associative_container<tkey, tvalue>::key_value_pair>(0);
+        }
+
+        std::vector<typename associative_container<tkey, tvalue>::key_value_pair> result;
+        auto path_info = find_path(lower_bound_inclusive);
+        auto index = std::get<2>(path_info);
+        auto *traversable_node = *std::get<1>(path_info);
+
+        while (traversable_node != nullptr)
+        {
+            for (auto i = index; i < traversable_node->involved_keys; i++)
+            {
+                if (comparer(traversable_node->keys_and_values[i].key, upper_bound_inclusive) > 0)
+                {
+                    return result;
+                }
+
+                result.push_back(traversable_node->keys_and_values[i]);
+            }
+
+            traversable_node = traversable_node->subtrees[traversable_node->involved_keys];
+            index = 0;
+        }
+
+        return result;
+    }
+
     tvalue remove(
-        tkey const &key) override
+            tkey const &key) override
     {
         auto path_info = find_path(key);
         if (!std::get<3>(path_info))
@@ -316,16 +389,17 @@ public:
         }
 
         //auto *
+        throw not_implemented();
     }
 
 private:
 
-    inline unsigned int get_min_keys_count() const noexcept
+    [[nodiscard]] inline unsigned int get_min_keys_count() const noexcept
     {
         return _t - 1;
     }
 
-    inline unsigned int get_max_keys_count() const noexcept
+    [[nodiscard]] inline unsigned int get_max_keys_count() const noexcept
     {
         return get_min_keys_count() * 2;
     }
