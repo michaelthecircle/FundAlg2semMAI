@@ -1,16 +1,19 @@
 #ifndef MAIN_CPP_REQUEST_HANDLER_WITH_COMMAND_CHAIN_H
 #define MAIN_CPP_REQUEST_HANDLER_WITH_COMMAND_CHAIN_H
-#include "abstract_handler.h"
+#include <iostream>
 #include "request_handler_with_command.h"
 
-template<typename trequest> class request_handler_with_command_chain final
+class request_handler_with_command_chain final
 {
+
 private:
-    abstract_handler<trequest> *_first_handler;
-    abstract_handler<trequest> *_last_handler;
+
+    abstract_handler * _first_handler;
+    abstract_handler * _last_handler;
+
 public:
-    request_handler_with_command_chain()
-            : _first_handler(nullptr), _last_handler(nullptr)
+
+    request_handler_with_command_chain(): _first_handler(nullptr), _last_handler(nullptr)
     {
 
     }
@@ -23,12 +26,15 @@ public:
             delete _last_handler;
         }
     }
+
     request_handler_with_command_chain(request_handler_with_command_chain const &) = delete;
     request_handler_with_command_chain(request_handler_with_command_chain &&) = delete;
     request_handler_with_command_chain &operator=(request_handler_with_command_chain const &) = delete;
     request_handler_with_command_chain &operator=(request_handler_with_command_chain &&) = delete;
+
 public:
-    bool handle(trequest const &request) const noexcept
+
+    bool handle(std::string const & request) const noexcept
     {
         if (_first_handler == nullptr)
         {
@@ -37,15 +43,18 @@ public:
 
         return _first_handler->handle(request);
     }
+
 public:
-    request_handler_with_command_chain &add_handler(command<trequest> *cmd)
+
+    request_handler_with_command_chain & add_handler(command * cmd)
     {
-        _last_handler = _first_handler == nullptr
-                        ? _first_handler = new request_handler_with_command<trequest>(cmd)
-                        : _last_handler->_next_handler = new request_handler_with_command<trequest>(cmd);
+        _last_handler = _first_handler == nullptr ?
+                _first_handler = new request_handler_with_command(cmd) :
+                _last_handler->_next_handler = new request_handler_with_command(cmd);
 
         return *this;
     }
+
 };
 
 

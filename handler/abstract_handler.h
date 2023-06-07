@@ -1,22 +1,26 @@
 #ifndef MAIN_CPP_ABSTRACT_HANDLER_H
 #define MAIN_CPP_ABSTRACT_HANDLER_H
 
-template<typename trequest> class request_handler_with_command_chain;
+#include <iostream>
 
-template<typename trequest> class abstract_handler
+class abstract_handler
 {
-    friend class request_handler_with_command_chain<trequest>;
-protected:
-    abstract_handler<trequest> *_next_handler;
-public:
-    abstract_handler()
-            : _next_handler(nullptr)
-    {
 
-    }
-    virtual ~abstract_handler() = default;
+    friend class request_handler_with_command_chain;
+
+protected:
+
+    abstract_handler * _next_handler;
+
 public:
-    virtual bool handle(trequest const &) const noexcept = 0;
+
+    abstract_handler() : _next_handler(nullptr) {}
+
+    virtual ~abstract_handler() = default;
+
+public:
+
+    virtual bool handle(std::string const & request) const noexcept = 0;
 };
 
 #endif //MAIN_CPP_ABSTRACT_HANDLER_H
