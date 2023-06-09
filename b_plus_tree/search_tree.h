@@ -371,7 +371,7 @@ void search_tree<tkey, tvalue, tkey_comparer>::node_interaction_context::destroy
     deallocate_with_guard(node_shell->subtrees);
     for (auto i = 0; i < node_shell->involved_keys; i++)
     {
-        //std::cout << "Removed key == " << node_shell->keys_and_values[i].key << ", value == \"" << node_shell->keys_and_values[i].value << '\"' << std::endl;
+        std::cout << "Removed key == " << node_shell->keys_and_values[i].key << ", value == \"" << node_shell->keys_and_values[i].value << '\"' << std::endl;
         node_shell->keys_and_values[i].~key_value_pair();
     }
 
@@ -493,6 +493,7 @@ std::optional<std::pair<typename search_tree<tkey, tvalue, tkey_comparer>::searc
     else
     {
         new (node->keys_and_values + node->involved_keys) typename associative_container<tkey, tvalue>::key_value_pair;
+
         for (auto i = node->involved_keys; i > index_to_vacate; --i)
         {
             node->keys_and_values[i].key = node->keys_and_values[i - 1].key;

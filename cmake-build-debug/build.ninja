@@ -53,13 +53,6 @@ build CMakeFiles/zad_1.dir/memory.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/
   OBJECT_DIR = CMakeFiles/zad_1.dir
   OBJECT_FILE_DIR = CMakeFiles/zad_1.dir
 
-build CMakeFiles/zad_1.dir/alloc_list/list_memory.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Documents/labs$ irb/lab$ 5/logger/alloc_list/list_memory.cpp || cmake_object_order_depends_target_zad_1
-  DEP_FILE = CMakeFiles/zad_1.dir/alloc_list/list_memory.cpp.o.d
-  FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -std=gnu++20
-  INCLUDES = -I"/Users/admin/Documents/labs irb/lab 5/logger/." -isystem /usr/local/include
-  OBJECT_DIR = CMakeFiles/zad_1.dir
-  OBJECT_FILE_DIR = CMakeFiles/zad_1.dir/alloc_list
-
 build CMakeFiles/zad_1.dir/logger/logger_holder.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Documents/labs$ irb/lab$ 5/logger/logger/logger_holder.cpp || cmake_object_order_depends_target_zad_1
   DEP_FILE = CMakeFiles/zad_1.dir/logger/logger_holder.cpp.o.d
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -std=gnu++20
@@ -117,7 +110,7 @@ build CMakeFiles/zad_1.dir/main.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Do
 #############################################
 # Link the executable zad_1
 
-build zad_1: CXX_EXECUTABLE_LINKER__zad_1_Debug CMakeFiles/zad_1.dir/memory.cpp.o CMakeFiles/zad_1.dir/alloc_list/list_memory.cpp.o CMakeFiles/zad_1.dir/logger/logger_holder.cpp.o CMakeFiles/zad_1.dir/logger/logger.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder_concrete.cpp.o CMakeFiles/zad_1.dir/logger/logger_concrete.cpp.o CMakeFiles/zad_1.dir/alloc_new_delete/memory_mihuil.cpp.o CMakeFiles/zad_1.dir/main.cpp.o
+build zad_1: CXX_EXECUTABLE_LINKER__zad_1_Debug CMakeFiles/zad_1.dir/memory.cpp.o CMakeFiles/zad_1.dir/logger/logger_holder.cpp.o CMakeFiles/zad_1.dir/logger/logger.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder_concrete.cpp.o CMakeFiles/zad_1.dir/logger/logger_concrete.cpp.o CMakeFiles/zad_1.dir/alloc_new_delete/memory_mihuil.cpp.o CMakeFiles/zad_1.dir/main.cpp.o
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk
   OBJECT_DIR = CMakeFiles/zad_1.dir
   POST_BUILD = :

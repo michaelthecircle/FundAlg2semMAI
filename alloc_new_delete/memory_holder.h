@@ -26,9 +26,21 @@ public:
     {
         auto *allocator = get_memory();
 
-        allocator == nullptr
-        ? ::operator delete(block_pointer)
-        : allocator->deallocate(block_pointer);
+        if (allocator == nullptr)
+        {
+            ::operator delete(block_pointer);
+        }
+        else
+        {
+            try
+            {
+                allocator->deallocate(block_pointer);
+            }
+            catch (std::exception())
+            {
+                ::operator delete(block_pointer);
+            }
+        }
     }
 
 protected:

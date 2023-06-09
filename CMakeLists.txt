@@ -9,8 +9,8 @@ add_executable(zad_1
         memory.h
         memory.cpp
         not_implemented.h
-        alloc_list/list_memory.h
-        alloc_list/list_memory.cpp
+        #alloc_list/list_memory.h
+        #alloc_list/list_memory.cpp
         logger/logger_holder.h
         logger/logger_holder.cpp
         typename_holder.h
@@ -37,7 +37,7 @@ add_executable(zad_1
         command/command_add_scheme.h
         command/command_get_data.h
         command/command_get_data_between.h
-        kursach_puk_puk/database_singleton.h
+        #kursach_puk_puk/database_singleton.h
         b_plus_tree/associative_container.h
         b_plus_tree/bplus_tree.h
         b_plus_tree/search_tree.h

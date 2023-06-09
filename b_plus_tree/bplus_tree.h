@@ -190,67 +190,67 @@ public:
         iterate_tree_inner(search_tree<tkey, tvalue, tkey_comparer>::_root, 0);
     }
 
-    //void iterate_tree_inner(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *ptr, unsigned int tab)
-    //{
-    //    if (ptr == nullptr)
-    //    {
-    //        return;
-    //    }
-//
-    //    for (auto j = 0; j < tab; j++)
-    //    {
-    //        std::cout << "  ";
-    //    }
-    //    std::cout << "[ ";
-//
-    //    for (auto i = 0; i < ptr->involved_keys; i++)
-    //    {
-    //        std::cout << '{' << ptr->keys_and_values[i].key << " " << ptr->keys_and_values[i].value << "} ";
-    //    }
-//
-    //    std::cout << ']' << std::endl;
-    //    if (ptr->subtrees[0] != nullptr)
-    //    {
-    //        for (auto i = 0; i <= ptr->involved_keys; i++)
-    //        {
-    //            iterate_tree_inner(ptr->subtrees[i], tab + 1);
-    //        }
-    //    }
-    //}
+    void iterate_tree_inner(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *ptr, unsigned int tab)
+    {
+        if (ptr == nullptr)
+        {
+            return;
+        }
 
-    //void iterate_terminal_nodes_list()
-    //{
-    //    auto *ptr = search_tree<tkey, tvalue, tkey_comparer>::_root;
-    //    while (ptr->subtrees[0] != nullptr)
-    //    {
-    //        ptr = ptr->subtrees[0];
-    //    }
-    //    std::cout << "[ ";
-    //    while (true)
-    //    {
-    //        std::cout << "[";
-    //        for (auto i = 0; i < ptr->involved_keys; i++)
-    //        {
-    //            std::cout << ptr->keys_and_values[i].key;
-    //            if (i != ptr->involved_keys - 1)
-    //            {
-    //                std::cout << ", ";
-    //            }
-    //        }
-    //        std::cout << "]";
-//
-    //        ptr = ptr->subtrees[ptr->involved_keys];
-    //        if (ptr != nullptr)
-    //        {
-    //            std::cout << ", ";
-    //        }
-    //        else
-    //        {
-    //            std::cout << " ]";
-    //            break;
-    //        }
-    //    }
-    //}
+        for (auto j = 0; j < tab; j++)
+        {
+            std::cout << "  ";
+        }
+        std::cout << "[ ";
+
+        for (auto i = 0; i < ptr->involved_keys; i++)
+        {
+            std::cout << '{' << ptr->keys_and_values[i].key << " " << ptr->keys_and_values[i].value << "} ";
+        }
+
+        std::cout << ']' << std::endl;
+        if (ptr->subtrees[0] != nullptr)
+        {
+            for (auto i = 0; i <= ptr->involved_keys; i++)
+            {
+                iterate_tree_inner(ptr->subtrees[i], tab + 1);
+            }
+        }
+    }
+
+    void iterate_terminal_nodes_list()
+    {
+        auto *ptr = search_tree<tkey, tvalue, tkey_comparer>::_root;
+        while (ptr->subtrees[0] != nullptr)
+        {
+            ptr = ptr->subtrees[0];
+        }
+        std::cout << "[ ";
+        while (true)
+        {
+            std::cout << "[";
+            for (auto i = 0; i < ptr->involved_keys; i++)
+            {
+                std::cout << ptr->keys_and_values[i].key;
+                if (i != ptr->involved_keys - 1)
+                {
+                    std::cout << ", ";
+                }
+            }
+            std::cout << "]";
+
+            ptr = ptr->subtrees[ptr->involved_keys];
+            if (ptr != nullptr)
+            {
+                std::cout << ", ";
+            }
+            else
+            {
+                std::cout << " ]";
+                break;
+            }
+        }
+    }
 
     void insert(
             tkey const &key,
@@ -388,8 +388,7 @@ public:
             throw typename search_tree<tkey, tvalue, tkey_comparer>::removing_exception();
         }
 
-        //auto *
-        throw not_implemented();
+        throw not_implemented("remove");
     }
 
 private:

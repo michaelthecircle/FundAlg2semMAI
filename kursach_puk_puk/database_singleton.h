@@ -1,6 +1,6 @@
 #ifndef MAIN_CPP_DATABASE_SINGLETON_H
 #define MAIN_CPP_DATABASE_SINGLETON_H
-
+#include "./alloc_list/list_memory.h"
 #include <iostream>
 #include "./comparers/int_comparer.h"
 #include "definition_of_delivery.h"
@@ -11,9 +11,8 @@
 #include "./allocator_names/allocator_type.h"
 #include "./memory_allocation_mods/memory_with_fit_allocation.h"
 #include "./alloc_new_delete/memory_mihuil.h"
-#include "./alloc_list/list_memory.h"
-#include "./alloc_border/boundary_tags_allocator.h"
 #include "./kursach_puk_puk/logger_singleton.h"
+#include "./operation_not_supported.h"
 
 class database_singleton
 {
@@ -76,25 +75,37 @@ public:
             memory *allocator = nullptr;
             switch (pool_allocator_type)
             {
-                case allocator_type::global_heap:
-                    allocator = new memory_mihuil(logger_singleton::get_instance()->get_logger());
+                case allocator_type::sorted_list:
+                    allocator = new list_memory(5000, memory::allocation_mode::first_fit,nullptr, nullptr);
                     break;
-                //TODO Dodelay djalab
-                //case allocator_type::sorted_list:
-                //    allocator = new list_memory(pool_allocator_size, nullptr, logger_singleton::get_instance()->get_logger(), pool_allocator_allocation_mode);
-                //    break;
-                //case allocator_type::boundary_tags:
-                //   allocator = new border_descriptors_memory(pool_allocator_size, nullptr, logger_singleton::get_instance()->get_logger(), pool_allocator_allocation_mode);
-                //    break;
-                //case allocator_type::buddy_system:
-                //    allocator = new memory_buddy_system(pool_allocator_size, nullptr, logger_singleton::get_instance()->get_logger(), pool_allocator_allocation_mode);
-                //    break;
+                case allocator_type::global_heap:
+                    break;
+                case allocator_type::boundary_tags:
+                    break;
+                case allocator_type::buddy_system:
+                    break;
             }
             _database_entrypoint->insert(pool_name, std::move(std::make_pair(new bplus_tree<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *, stdstring_comparer>(10), allocator)));
         }
         catch (search_tree<std::string, std::pair<associative_container<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *> *, memory *>, stdstring_comparer>::insertion_exception const &ex)
         {
-            // TODO: ?!
+            throw operation_not_supported();
+            return ;
+        }
+    }
+    void add_scheme(
+            std::string const &pool_name,
+            std::string const &scheme_name
+            )
+    {
+        try
+        {
+            std::get<0>(_database_entrypoint->get(pool_name))->insert(scheme_name, std::move(bplus_tree<std::pair<int, int>, delivery_member *, stdpair_int_int_comparer>(10));
+        }
+        catch (search_tree<std::string, std::pair<associative_container<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *> *, memory *>, stdstring_comparer>::insertion_exception const &ex)
+        {
+            throw operation_not_supported();
+            return ;
         }
     }
 };

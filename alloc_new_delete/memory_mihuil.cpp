@@ -92,3 +92,4 @@ std::string memory_mihuil::get_typename() const noexcept
 {
     return "memory_mihuil";
 }
+

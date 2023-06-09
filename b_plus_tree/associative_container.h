@@ -89,4 +89,5 @@ tvalue associative_container<tkey, tvalue>::operator-=(
 {
     return remove(key);
 }
+
 #endif
