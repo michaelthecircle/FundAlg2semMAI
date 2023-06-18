@@ -9,7 +9,6 @@ private:
     std::string _file_path;
     std::ifstream _file;
     std::string current_string;
-private:
 
 public:
     file_reader(std::string &file_path): _file_path(std::move(file_path)) {}

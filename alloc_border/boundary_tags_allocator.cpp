@@ -15,7 +15,7 @@ size_t border_descriptors_memory::get_allocator_size() const
     return *reinterpret_cast<size_t *>(_all_memory);
 }
 
-size_t border_descriptors_memory::get_serv_occup_block() const
+size_t border_descriptors_memory::get_occup_block_serv_size() const
 {
     return sizeof(size_t) + 2 * sizeof(void *);
 }
@@ -30,9 +30,9 @@ void **border_descriptors_memory::get_pointer_next_block(void *target_ptr) const
     return reinterpret_cast<void **>(reinterpret_cast<size_t *>(target_ptr) + 1) + 1;
 }
 
-size_t *border_descriptors_memory::get_block_size(void *target_ptr) const
+size_t border_descriptors_memory::get_size_block(void *target_ptr) const
 {
-    return reinterpret_cast<size_t *>(target_ptr);
+    return *reinterpret_cast<size_t *>(target_ptr);
 }
 
 logger *border_descriptors_memory::get_logger() const noexcept
@@ -41,15 +41,15 @@ logger *border_descriptors_memory::get_logger() const noexcept
 }
 
 std::pair<void *, size_t> border_descriptors_memory::get_aviable_block_address_and_size(
-    void *const previous_occupied_block_address,
-    void *const next_occupied_block_address) const
+        void *const previous_occupied_block_address,
+        void *const next_occupied_block_address) const
 {
-    size_t serv_occup_block_size = get_serv_occup_block();
+    size_t serv_occup_block_size = get_occup_block_serv_size();
     size_t allocator_size = get_allocator_size();
     size_t service_part_allocator_size = get_service_part_allocator_size();
     auto previous_occupied_block_size = previous_occupied_block_address == nullptr
-                                            ? 0
-                                            : *get_block_size(previous_occupied_block_address);
+                                        ? 0
+                                        : get_size_block(previous_occupied_block_address);
     size_t block_size = 0;
     void *block_address = nullptr;
 
@@ -82,16 +82,16 @@ std::string border_descriptors_memory::get_allocate_mode_string(allocate_mode me
     std::string allocate_mode;
     switch (method)
     {
-    case memory::allocate_mode::first_fit:
-        allocate_mode = "the first fit method";
-        break;
+        case memory::allocate_mode::first_fit:
+            allocate_mode = "the first fit method";
+            break;
 
-    case memory::allocate_mode::best_fit:
-        allocate_mode = "the best fit method";
-        break;
-    default:
-        allocate_mode = "the worst fit method";
-        break;
+        case memory::allocate_mode::best_fit:
+            allocate_mode = "the best fit method";
+            break;
+        default:
+            allocate_mode = "the worst fit method";
+            break;
     }
     return allocate_mode;
 }
@@ -101,7 +101,7 @@ std::string border_descriptors_memory::get_pointer_address(void *target_ptr) con
 
     char str[20];
     memset(str, 0, 20);
-    sprintf(str, "%p", target_ptr);
+    snprintf(str, 20, "%p", target_ptr);
     std::string add;
     add.append(str);
     return add;
@@ -115,7 +115,7 @@ void border_descriptors_memory::debug_alloc(const void *target_ptr) const
         return;
     }
     unsigned char *ptr = reinterpret_cast<unsigned char *>(reinterpret_cast<size_t *>(const_cast<void *>(target_ptr)) + 1) + 2 * sizeof(void *);
-    size_t size = *get_block_size(const_cast<void *>(target_ptr));
+    size_t size = get_size_block(const_cast<void *>(target_ptr));
     std::string buff;
     for (int i = 0; i < size; i++)
     {
@@ -148,11 +148,11 @@ void border_descriptors_memory::dump_allocator_state(bool is_allocate) const noe
     {
         void *previous_occupied_block = nullptr;
 
-        // if (current_occupied_block != reinterpret_cast<unsigned char *>(_all_memory) + allocator_service_part_size)
-        //{
-        //     auto first_available_block_size = reinterpret_cast<unsigned char *>(current_occupied_block) - reinterpret_cast<unsigned char *>(reinterpret_cast<unsigned char *>(_all_memory) + allocator_service_part_size);
-        //     constructed_state_string += "avlbl " + std::to_string(first_available_block_size) + '|';
-        // }
+         if (current_occupied_block != reinterpret_cast<unsigned char *>(_all_memory) + allocator_service_part_size)
+        {
+             auto first_available_block_size = reinterpret_cast<unsigned char *>(current_occupied_block) - reinterpret_cast<unsigned char *>(reinterpret_cast<unsigned char *>(_all_memory) + allocator_service_part_size);
+             constructed_state_string += "avlbl " + std::to_string(first_available_block_size) + '|';
+         }
 
         while (true)
         {
@@ -162,7 +162,7 @@ void border_descriptors_memory::dump_allocator_state(bool is_allocate) const noe
             if (previous_occupied_block != nullptr)
             {
                 constructed_state_string +=
-                    "occup " + std::to_string(*get_block_size(previous_occupied_block)) + '|';
+                        "occup " + std::to_string(get_size_block(previous_occupied_block)) + '|';
             }
 
             if (aviable_block_size != 0)
@@ -196,14 +196,14 @@ void *border_descriptors_memory::allocate(size_t requested_block_size) const
     size_t target_block_size = 0;
     void *next_to_target_block = nullptr;
 
-    size_t serv_occup_block_size = get_serv_occup_block();
+    size_t serv_occup_block_size = get_occup_block_serv_size();
     size_t allocator_size = get_allocator_size();
     size_t service_part_allocator_size = get_service_part_allocator_size();
 
     if (curr_block == nullptr && requested_block_size + serv_occup_block_size < allocator_size)
     {
         curr_block = reinterpret_cast<void *>(reinterpret_cast<unsigned char *>(_all_memory) + service_part_allocator_size);
-        *get_block_size(curr_block) = requested_block_size;
+        *reinterpret_cast<size_t *>(curr_block) = requested_block_size;
         *get_pointer_prev_block(curr_block) = nullptr;
         *get_pointer_next_block(curr_block) = nullptr;
 
@@ -279,21 +279,21 @@ void *border_descriptors_memory::allocate(size_t requested_block_size) const
     return reinterpret_cast<void *>(reinterpret_cast<void **>(reinterpret_cast<size_t *>(target_block) + 1) + 2);
 }
 
-void border_descriptors_memory::deallocate(const void *const target_to_dealloc) const
+void border_descriptors_memory::deallocate(void *block_to_deallocate_address) const
 {
-    auto true_target_to_dealloc = reinterpret_cast<void *>(reinterpret_cast<unsigned char *>(const_cast<void *>(target_to_dealloc)) - get_serv_occup_block());
-    debug_alloc(true_target_to_dealloc);
+    auto true_target_to_dealloc = reinterpret_cast<void *>(reinterpret_cast<unsigned char *>(block_to_deallocate_address) - get_occup_block_serv_size());
+    //debug_alloc(true_target_to_dealloc);
     auto *previous_to_target_block = *get_pointer_prev_block(const_cast<void *>(true_target_to_dealloc));
     auto *next_to_target_block = *get_pointer_next_block(const_cast<void *>(true_target_to_dealloc));
     auto const service_part_allocator_size = get_service_part_allocator_size();
 
     *(previous_to_target_block == nullptr
-          ? get_first_occup_block()
-          : get_pointer_next_block(previous_to_target_block)) = next_to_target_block;
+      ? get_first_occup_block()
+      : get_pointer_next_block(previous_to_target_block)) = next_to_target_block;
 
     next_to_target_block == nullptr
-        ? nullptr
-        : *get_pointer_prev_block(next_to_target_block) = previous_to_target_block;
+    ? nullptr
+    : *get_pointer_prev_block(next_to_target_block) = previous_to_target_block;
 
     dump_allocator_state(false);
 }
@@ -328,11 +328,24 @@ border_descriptors_memory::~border_descriptors_memory()
     auto *outer_allocator = *reinterpret_cast<memory **>(reinterpret_cast<unsigned char *>(_all_memory) + sizeof(size_t) + sizeof(logger *) + sizeof(memory::allocate_mode));
 
     outer_allocator == nullptr
-        ? ::operator delete(_all_memory)
-        : outer_allocator->deallocate(_all_memory);
+    ? ::operator delete(_all_memory)
+    : outer_allocator->deallocate(_all_memory);
 
     if (got_logger != nullptr)
     {
         got_logger->log("Destructor executed successfully", logger::severity::trace);
     }
 }
+
+memory *border_descriptors_memory::get_memory() const {
+    return memory::get_memory();
+}
+
+void *border_descriptors_memory::get_buddies(void *target_ptr) const {
+    return memory::get_buddies(target_ptr);
+}
+
+bool border_descriptors_memory::is_free_block(void *target_ptr) const {
+    return memory::is_free_block(target_ptr);
+}
+

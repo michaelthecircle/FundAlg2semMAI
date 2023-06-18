@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories(.)
 find_package(nlohmann_json 3.11.2 REQUIRED)
 add_executable(zad_1
+        alloc_buddies/budy_system.h
+        alloc_buddies/budy_system.cpp
         memory.h
         memory.cpp
         not_implemented.h
@@ -23,8 +25,10 @@ add_executable(zad_1
         logger/logger_concrete.cpp
         logger/logger_concrete.h
         alloc_new_delete/memory_holder.h
-        alloc_new_delete/memory_mihuil.cpp
-        alloc_new_delete/memory_mihuil.h
+        #alloc_new_delete/memory_mihuil.cpp
+        #alloc_new_delete/memory_mihuil.h
+        alloc_border/boundary_tags_allocator.h
+        alloc_border/boundary_tags_allocator.cpp
         binary_search_tree/binary_search_tree.h
         kursach_puk_puk/definition_of_delivery.h
         comparers/stdstring_comparer.h

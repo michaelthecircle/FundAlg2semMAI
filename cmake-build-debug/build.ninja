@@ -46,6 +46,13 @@ cmake_ninja_workdir = /Users/admin/Documents/labs$ irb/lab$ 5/logger/cmake-build
 
 build cmake_object_order_depends_target_zad_1: phony || CMakeFiles/zad_1.dir
 
+build CMakeFiles/zad_1.dir/alloc_buddies/budy_system.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Documents/labs$ irb/lab$ 5/logger/alloc_buddies/budy_system.cpp || cmake_object_order_depends_target_zad_1
+  DEP_FILE = CMakeFiles/zad_1.dir/alloc_buddies/budy_system.cpp.o.d
+  FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -std=gnu++20
+  INCLUDES = -I"/Users/admin/Documents/labs irb/lab 5/logger/." -isystem /usr/local/include
+  OBJECT_DIR = CMakeFiles/zad_1.dir
+  OBJECT_FILE_DIR = CMakeFiles/zad_1.dir/alloc_buddies
+
 build CMakeFiles/zad_1.dir/memory.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Documents/labs$ irb/lab$ 5/logger/memory.cpp || cmake_object_order_depends_target_zad_1
   DEP_FILE = CMakeFiles/zad_1.dir/memory.cpp.o.d
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -std=gnu++20
@@ -88,12 +95,12 @@ build CMakeFiles/zad_1.dir/logger/logger_concrete.cpp.o: CXX_COMPILER__zad_1_Deb
   OBJECT_DIR = CMakeFiles/zad_1.dir
   OBJECT_FILE_DIR = CMakeFiles/zad_1.dir/logger
 
-build CMakeFiles/zad_1.dir/alloc_new_delete/memory_mihuil.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Documents/labs$ irb/lab$ 5/logger/alloc_new_delete/memory_mihuil.cpp || cmake_object_order_depends_target_zad_1
-  DEP_FILE = CMakeFiles/zad_1.dir/alloc_new_delete/memory_mihuil.cpp.o.d
+build CMakeFiles/zad_1.dir/alloc_border/boundary_tags_allocator.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Documents/labs$ irb/lab$ 5/logger/alloc_border/boundary_tags_allocator.cpp || cmake_object_order_depends_target_zad_1
+  DEP_FILE = CMakeFiles/zad_1.dir/alloc_border/boundary_tags_allocator.cpp.o.d
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -std=gnu++20
   INCLUDES = -I"/Users/admin/Documents/labs irb/lab 5/logger/." -isystem /usr/local/include
   OBJECT_DIR = CMakeFiles/zad_1.dir
-  OBJECT_FILE_DIR = CMakeFiles/zad_1.dir/alloc_new_delete
+  OBJECT_FILE_DIR = CMakeFiles/zad_1.dir/alloc_border
 
 build CMakeFiles/zad_1.dir/main.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Documents/labs$ irb/lab$ 5/logger/main.cpp || cmake_object_order_depends_target_zad_1
   DEP_FILE = CMakeFiles/zad_1.dir/main.cpp.o.d
@@ -110,7 +117,7 @@ build CMakeFiles/zad_1.dir/main.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Do
 #############################################
 # Link the executable zad_1
 
-build zad_1: CXX_EXECUTABLE_LINKER__zad_1_Debug CMakeFiles/zad_1.dir/memory.cpp.o CMakeFiles/zad_1.dir/logger/logger_holder.cpp.o CMakeFiles/zad_1.dir/logger/logger.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder_concrete.cpp.o CMakeFiles/zad_1.dir/logger/logger_concrete.cpp.o CMakeFiles/zad_1.dir/alloc_new_delete/memory_mihuil.cpp.o CMakeFiles/zad_1.dir/main.cpp.o
+build zad_1: CXX_EXECUTABLE_LINKER__zad_1_Debug CMakeFiles/zad_1.dir/alloc_buddies/budy_system.cpp.o CMakeFiles/zad_1.dir/memory.cpp.o CMakeFiles/zad_1.dir/logger/logger_holder.cpp.o CMakeFiles/zad_1.dir/logger/logger.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder_concrete.cpp.o CMakeFiles/zad_1.dir/logger/logger_concrete.cpp.o CMakeFiles/zad_1.dir/alloc_border/boundary_tags_allocator.cpp.o CMakeFiles/zad_1.dir/main.cpp.o
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk
   OBJECT_DIR = CMakeFiles/zad_1.dir
   POST_BUILD = :
