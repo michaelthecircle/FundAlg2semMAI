@@ -109,6 +109,13 @@ build CMakeFiles/zad_1.dir/main.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Do
   OBJECT_DIR = CMakeFiles/zad_1.dir
   OBJECT_FILE_DIR = CMakeFiles/zad_1.dir
 
+build CMakeFiles/zad_1.dir/b_plus_tree/bplustreeindian.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Documents/labs$ irb/lab$ 5/logger/b_plus_tree/bplustreeindian.cpp || cmake_object_order_depends_target_zad_1
+  DEP_FILE = CMakeFiles/zad_1.dir/b_plus_tree/bplustreeindian.cpp.o.d
+  FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -std=gnu++20
+  INCLUDES = -I"/Users/admin/Documents/labs irb/lab 5/logger/." -isystem /usr/local/include
+  OBJECT_DIR = CMakeFiles/zad_1.dir
+  OBJECT_FILE_DIR = CMakeFiles/zad_1.dir/b_plus_tree
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target zad_1
@@ -117,7 +124,7 @@ build CMakeFiles/zad_1.dir/main.cpp.o: CXX_COMPILER__zad_1_Debug /Users/admin/Do
 #############################################
 # Link the executable zad_1
 
-build zad_1: CXX_EXECUTABLE_LINKER__zad_1_Debug CMakeFiles/zad_1.dir/alloc_buddies/budy_system.cpp.o CMakeFiles/zad_1.dir/memory.cpp.o CMakeFiles/zad_1.dir/logger/logger_holder.cpp.o CMakeFiles/zad_1.dir/logger/logger.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder_concrete.cpp.o CMakeFiles/zad_1.dir/logger/logger_concrete.cpp.o CMakeFiles/zad_1.dir/alloc_border/boundary_tags_allocator.cpp.o CMakeFiles/zad_1.dir/main.cpp.o
+build zad_1: CXX_EXECUTABLE_LINKER__zad_1_Debug CMakeFiles/zad_1.dir/alloc_buddies/budy_system.cpp.o CMakeFiles/zad_1.dir/memory.cpp.o CMakeFiles/zad_1.dir/logger/logger_holder.cpp.o CMakeFiles/zad_1.dir/logger/logger.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder.cpp.o CMakeFiles/zad_1.dir/logger/logger_builder_concrete.cpp.o CMakeFiles/zad_1.dir/logger/logger_concrete.cpp.o CMakeFiles/zad_1.dir/alloc_border/boundary_tags_allocator.cpp.o CMakeFiles/zad_1.dir/main.cpp.o CMakeFiles/zad_1.dir/b_plus_tree/bplustreeindian.cpp.o
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk
   OBJECT_DIR = CMakeFiles/zad_1.dir
   POST_BUILD = :

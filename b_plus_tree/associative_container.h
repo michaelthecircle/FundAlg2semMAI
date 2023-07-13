@@ -29,10 +29,10 @@ public:
     virtual void insert(
             tkey const &key,
             tvalue &&value) = 0;
-
-    virtual tvalue const &get(
-            tkey const &key) = 0;
-
+//TODO: changed method called "get" to "find"
+    //virtual tvalue const &get(
+    //        tkey const &key) = 0;
+    virtual bool find(typename associative_container<tkey, tvalue>::key_value_pair *target_key_and_result_value) = 0;
     virtual std::vector<typename associative_container<tkey, tvalue>::key_value_pair> get_in_range(
             tkey const &lower_bound_inclusive,
             tkey const &upper_bound_inclusive);
@@ -78,7 +78,8 @@ template<
 tvalue const &associative_container<tkey, tvalue>::operator[](
         tkey const &key)
 {
-    return get(key);
+    //changed "get" to "find"
+    return find(key);
 }
 
 template<

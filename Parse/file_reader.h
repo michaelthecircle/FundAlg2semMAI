@@ -20,7 +20,7 @@ public:
     void read_file_by_line(std::ifstream &opened_file)
     {
         while(std::getline(_file, current_string)){
-            std::cout << "current_string" << current_string << std::endl;
+            std::cout << "current_string = " << current_string << std::endl;
         }
     }
 

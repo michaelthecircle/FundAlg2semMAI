@@ -6,7 +6,7 @@
 #include <vector>
 #include "./Parse/parse.h"
 
-class command_add_collection final : public command<std::string>
+class command_add_collection final : public command
 {
 private:
     std::string _pool_name;
@@ -32,7 +32,7 @@ public:
 
     }
 
-    void execute(std::string const &request) noexcept final
+    void execute(std::string const &request) const noexcept final
     {
         logger_singleton::get_instance()->get_logger()->log("command_add_collection::execute(std::string const &request) called", logger::severity::trace);
     }

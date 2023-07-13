@@ -333,7 +333,7 @@ private:
 
 public:
 
-    tvalue const &get(
+    tvalue const &find(
             tkey const &key) override
     {
         auto path_info = find_path(key);

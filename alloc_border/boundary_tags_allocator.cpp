@@ -96,15 +96,17 @@ std::string border_descriptors_memory::get_allocate_mode_string(allocate_mode me
     return allocate_mode;
 }
 
+
 std::string border_descriptors_memory::get_pointer_address(void *target_ptr) const
 {
+    unsigned long shift = reinterpret_cast<unsigned char *>(target_ptr) - reinterpret_cast<unsigned char *>(get_first_avail_block_ptr() + 1);
+    static char str_beginning[BUFSIZ];
+    memset(str_beginning, 0, 20);
+    char format_str[20];
+    sprintf(format_str, "0x%%0%luX", sizeof(unsigned int) * 2);
+    sprintf(str_beginning, format_str, shift);
 
-    char str[20];
-    memset(str, 0, 20);
-    snprintf(str, 20, "%p", target_ptr);
-    std::string add;
-    add.append(str);
-    return add;
+    return std::string { str_beginning };
 }
 
 void border_descriptors_memory::debug_alloc(const void *target_ptr) const

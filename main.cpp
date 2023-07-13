@@ -10,7 +10,13 @@
 //#include "./alloc_new_delete/memory_mihuil.h"
 #include "./alloc_border/boundary_tags_allocator.h"
 #include "./alloc_buddies/budy_system.h"
+#include "./binary_search_tree/binary_search_tree_2.h"
+#include "./avl_tree/avl_tree.h"
+#include "./splay_tree/splay_tree.h"
+#include "kursach_puk_puk/logger_singleton.h"
+#include "Parse/file_reader.h"
 
+//bplus_tree_test
 /*void bplus_tree_test()
 {
     srand(12345);
@@ -65,7 +71,7 @@
     delete sorted_list_allocator;
     delete sorted_list_allocator_logger;
 }*/
-
+/*
 void allocator_demo_1(
         unsigned int iterations_count)
 {
@@ -182,23 +188,168 @@ void allocator_demo_2(
     delete builder;
 }
 
+void tree_test(std::string tree_type)
+{
+    * tree types:
+    "bst" - bst
+    "avl" - avl
+    "splay" - splay
+
+    class functor_int
+    {
+    public:
+        int operator()(int first, int second)
+        {
+            return first - second;
+        }
+    };
+
+    class key_comparer
+    {
+    public:
+        int operator()(int first, int second)
+        {
+            return first - second;
+        }
+
+        int operator()(std::string first, std::string second)
+        {
+            if (first > second)
+                return 1;
+            else if (first < second)
+                return -1;
+            else
+                return 0;
+        }
+    };
+    logger_builder *builder = new logger_builder_concrete();
+    logger *log = builder
+            ->add_stream("bst_test_trace.txt", logger::severity::trace)
+            ->add_stream("bst_test_debug.txt", logger::severity::debug)
+            ->construct();
+
+    memory *allocator = new border_descriptors_memory(log, nullptr, 10000, memory::allocate_mode::first_fit);
+    if (tree_type == "bst")
+    {
+        associative_container<int, std::string> *bst = new binary_search_tree<int, std::string, key_comparer>(allocator, log);
+
+        bst->insert(1, std::move(std::string("a")));
+        bst->insert(2, std::move(std::string("b")));
+        bst->insert(15, std::move(std::string("o")));
+        bst->insert(3, std::move(std::string("b")));
+        bst->insert(4, std::move(std::string("a")));
+
+        auto tree = *reinterpret_cast<binary_search_tree<int, std::string, key_comparer> *>(bst);
+
+        auto end_infix = tree.end_infix();
+
+        for (auto it = tree.begin_infix(); it != end_infix; ++it)
+        {
+            for (auto i = 0; i < std::get<0>(*it); i++)
+            {
+                std::cout << "  ";
+            }
+            std::cout << "Key = \"" << std::get<1>(*it) << "\", Value = \"" << std::get<2>(*it) << "\"" << std::endl;
+        }
+        std::cout << std::endl;
+
+        delete bst;
+    }
+    else if (tree_type == "avl")
+    {
+        auto *avl = new avl_tree<int, std::string, key_comparer>(allocator, log);
+
+        avl->insert(1, std::move(std::string("a")));
+        avl->insert(2, std::move(std::string("b")));
+        avl->insert(15, std::move(std::string("o")));
+        avl->insert(3, std::move(std::string("b")));
+        avl->insert(4, std::move(std::string("a")));
+
+        auto tree = *reinterpret_cast<binary_search_tree<int, std::string, key_comparer> *>(avl);
+
+        auto end_infix = tree.end_infix();
+
+        for (auto it = tree.begin_infix(); it != end_infix; ++it)
+        {
+            for (auto i = 0; i < std::get<0>(*it); i++)
+            {
+                std::cout << "  ";
+            }
+            std::cout << "Key = \"" << std::get<1>(*it) << "\", Value = \"" << std::get<2>(*it) << "\"" << std::endl;
+        }
+        std::cout << std::endl;
+
+        delete avl;
+    }
+    /*else if (tree_type == "splay")
+    {
+        logger_builder *builder = new logger_builder_concrete();
+        logger *log = builder
+                ->add_stream("file1.txt", logger::severity::trace)
+                ->add_stream("file2.txt", logger::severity::debug)
+                ->construct();
+
+        memory *allocator = new border_descriptors_memory(log, nullptr, 100000, memory::allocate_mode::first_fit);
+
+        associative_container<int, std::string> *splay = new splay_tree<int, std::string, key_comparer>(allocator, log);
+
+        splay->insert(1, std::move(std::string("a")));
+        std::cout << "insert complated" << std::endl;
+        splay->insert(2, std::move(std::string("b")));
+        std::cout << "insert complated" << std::endl;
+        splay->insert(15, std::move(std::string("o")));
+        std::cout << "insert complated" << std::endl;
+        splay->insert(3, std::move(std::string("b")));
+        std::cout << "insert complated" << std::endl;
+        splay->insert(4, std::move(std::string("a")));
+        std::cout << "insert complated" << std::endl;
+
+        // auto ins = associative_container<int, std::string>::key_and_value_pair{6, std::move("c")};
+        // *bst += ins;
+
+        splay->remove(15);
+        // avl->remove(2);
+        auto tree = *reinterpret_cast<binary_search_tree<int, std::string, key_comparer> *>(splay);
+
+        auto end_infix = tree.end_infix();
+
+        for (auto it = tree.begin_infix(); it != end_infix; ++it)
+        {
+            for (auto i = 0; i < std::get<0>(*it); i++)
+            {
+                std::cout << "  ";
+            }
+            std::cout << "Key = \"" << std::get<1>(*it) << "\", Value = \"" << std::get<2>(*it) << "\"" << std::endl;
+            // std::cout << "lol" << std::endl;
+            // for (int i = 0; i < std::get<0>(*it); i++)
+            // {
+            //     std::cout << "  ";
+            // }
+            // std::cout << std::get<2>(*it) << " " << std::endl;
+        }
+        std::cout << std::endl;
+
+        delete splay;
+    }
+
+}
+*/
+
+
 int main(int argc, char *argv[])
 {
-    allocator_demo_1(100);
-    allocator_demo_2(100);
+
     return 0;
 }
 
 
 
 
-
-
-
-
-
-
-
+//    TASK TESTS 4-5 1 2 11 - last
+/* for 4-5 tasks:
+     //allocator_demo_1(100);
+    //allocator_demo_2(100);
+*/
 
 /* for 1st task
  * logger_builder* builder0 = new logger_builder_concrete();
@@ -227,7 +378,6 @@ int main(int argc, char *argv[])
     delete builder;
     */
 
-
 /* for 2d task
     logger_builder* builder_mem = new logger_builder_concrete();
     logger *log_mem = builder_mem->add_stream("mem.txt", logger::severity::trace)->construct();
@@ -240,3 +390,76 @@ int main(int argc, char *argv[])
     }
     memoryMihuil.deallocate(sobaka);
     delete builder_mem; */
+
+/*for 11th task
+    ---------------------------------------------------------in main:::::
+    logger_builder *builder = new logger_builder_concrete();
+    logger *log = builder
+                      ->add_stream("file1.txt", logger::severity::trace)
+                      ->add_stream("file2.txt", logger::severity::debug)
+                      ->construct();
+
+    memory *allocator = new border_descriptors_memory(log, nullptr, 10000, memory::allocate_mode::first_fit);
+
+    associative_container<int, std::string> *bst = new binary_search_tree<int, std::string, key_comparer>(allocator, log);
+
+    bst->insert(1, std::move(std::string("a")));
+    bst->insert(2, std::move(std::string("b")));
+    bst->insert(15, std::move(std::string("o")));
+    bst->insert(3, std::move(std::string("b")));
+    bst->insert(4, std::move(std::string("a")));
+    // auto ins = associative_container<int, std::string>::key_and_value_pair{6, std::move("c")};
+    // *bst += ins;
+
+    // bst->remove(15);
+    auto tree = *reinterpret_cast<binary_search_tree<int, std::string, key_comparer> *>(bst);
+
+    auto end_infix = tree.end_infix();
+
+    for (auto it = tree.begin_infix(); it != end_infix; ++it)
+    {
+        for (auto i = 0; i < std::get<0>(*it); i++)
+        {
+            std::cout << "  ";
+        }
+        std::cout << "Key = \"" << std::get<1>(*it) << "\", Value = \"" << std::get<2>(*it) << "\"" << std::endl;
+        // std::cout << "lol" << std::endl;
+        // for (int i = 0; i < std::get<0>(*it); i++)
+        // {
+        //     std::cout << "  ";
+        // }
+        // std::cout << std::get<2>(*it) << " " << std::endl;
+    }
+    std::cout << std::endl;
+
+    delete bst;
+
+    ----------------------------------------------------------also ::
+    class functor_int
+{
+public:
+    int operator()(int first, int second)
+    {
+        return first - second;
+    }
+};
+
+class key_comparer
+{
+public:
+    int operator()(int first, int second)
+    {
+        return first - second;
+    }
+
+    int operator()(std::string first, std::string second)
+    {
+        if (first > second)
+            return 1;
+        else if (first < second)
+            return -1;
+        else
+            return 0;
+    }
+};
+*/

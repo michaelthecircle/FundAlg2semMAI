@@ -24,6 +24,7 @@ add_executable(zad_1
         logger/logger_builder_concrete.h
         logger/logger_concrete.cpp
         logger/logger_concrete.h
+        kursach_puk_puk/logger_singleton.h
         alloc_new_delete/memory_holder.h
         #alloc_new_delete/memory_mihuil.cpp
         #alloc_new_delete/memory_mihuil.h
@@ -41,9 +42,11 @@ add_executable(zad_1
         command/command_add_scheme.h
         command/command_get_data.h
         command/command_get_data_between.h
+        Parse/file_reader.h
         #kursach_puk_puk/database_singleton.h
         b_plus_tree/associative_container.h
         b_plus_tree/bplus_tree.h
         b_plus_tree/search_tree.h
-        main.cpp)
+        avl_tree/avl_tree.h
+        main.cpp binary_search_tree/binary_search_tree_2.h b_plus_tree/bplustreeindian.cpp splay_tree/splay_tree.h)
 target_link_libraries(zad_1 PRIVATE nlohmann_json::nlohmann_json)
