@@ -281,7 +281,7 @@ void tree_test(std::string tree_type)
 
         delete avl;
     }
-    /*else if (tree_type == "splay")
+    *else if (tree_type == "splay")
     {
         logger_builder *builder = new logger_builder_concrete();
         logger *log = builder
@@ -335,10 +335,22 @@ void tree_test(std::string tree_type)
 }
 */
 
+#include "comparers/stdstring_comparer.h"
 
 int main(int argc, char *argv[])
 {
-
+    //associative_container<std::string, int> *bplus = new bplus_tree<std::string, int, stdstring_comparer>(3);
+    bplus_tree<int, std::string, int_comparer> denis(3);
+    std::string file_name = "testFile.txt";
+    file_reader reader(file_name);
+    try
+    {
+        reader.read_file_by_line();
+    }
+    catch (const std::invalid_argument &ex)
+    {
+        std::cout<< ex.what() << std::endl;
+    }
     return 0;
 }
 

@@ -48,5 +48,5 @@ add_executable(zad_1
         b_plus_tree/bplus_tree.h
         b_plus_tree/search_tree.h
         avl_tree/avl_tree.h
-        main.cpp binary_search_tree/binary_search_tree_2.h b_plus_tree/bplustreeindian.cpp splay_tree/splay_tree.h)
+        main.cpp binary_search_tree/binary_search_tree_2.h b_plus_tree/bplustreeindian.cpp splay_tree/splay_tree.h database/keycomparer.h test_dbase_singleton_command/test_dbase_singleton.h test_dbase_singleton_command/pool.h test_dbase_singleton_command/scheme.h test_dbase_singleton_command/data_collection.h test_dbase_singleton_command/bst.h test_dbase_singleton_command/avl.h)
 target_link_libraries(zad_1 PRIVATE nlohmann_json::nlohmann_json)

@@ -5,7 +5,12 @@
 
 struct delivery_member
 {
-    std::pair<unsigned int, unsigned int> delivery_pair;
+    //std::pair<unsigned int, unsigned int> delivery_pair;
+    struct key
+    {
+        unsigned int user_id;
+        unsigned int delivery_id;
+    };
     struct value
     {
         enum class delivery_method
@@ -19,6 +24,7 @@ struct delivery_member
         std::string patronymic;
         std::string mail;
         std::string phone;
+        std::string address;
         std::string user_comment;
         std::string date;
     };

@@ -1099,7 +1099,7 @@ tvalue binary_search_tree<tkey, tvalue, tkey_comparer>::removing_template_method
             (*removed_node_initial)->key = to_swap_keys;
 
             tvalue to_swap_values = std::move((*removed_node)->value);
-            (*removed_node)->value = std::move((*removed_node_initial)->key);
+            (*removed_node)->value = (std::move((*removed_node_initial)->key));
             (*removed_node_initial)->value = std::move(to_swap_values);
         }
     }

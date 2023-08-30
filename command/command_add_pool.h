@@ -15,9 +15,9 @@ private:
     std::string _pool_name;
     allocator_type _pool_allocator_type;
     unsigned int _pool_allocator_size;
-    memory::allocation_mode _pool_allocator_allocation_mode;
+    memory::allocate_mode _pool_allocator_allocation_mode;
 public:
-    bool can_execute(std::string const &request) noexcept final
+    bool can_execute(std::string const &request) noexcept
     {
         logger_singleton::get_instance()->get_logger()->log("command_add_pool::can_execute(std::string const &request) called", logger::severity::trace);
         if(request.starts_with("ADD_POOL(") && request.ends_with(")"))
@@ -37,7 +37,7 @@ public:
         return false;
     }
 
-    void execute(std::string const &request) noexcept final
+    void execute(std::string const &request) noexcept
     {
         logger_singleton::get_instance()->get_logger()->log("command_add_pool::execute(std::string const &request) called", logger::severity::trace);
         //TODO database_singleton::get_instance()->add_pool(_pool_name, _pool_allocator_type, _pool_allocator_size, _pool_allocator_allocation_mode);

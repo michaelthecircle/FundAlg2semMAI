@@ -1,25 +1,24 @@
 #ifndef MAIN_CPP_DATA_COLLECTION_H
 #define MAIN_CPP_DATA_COLLECTION_H
-
 #include "./alloc_new_delete/memory_holder.h"
 #include "./memory.h"
 #include "./b_plus_tree/bplus_tree.h"
 #include "./kursach_puk_puk/definition_of_delivery.h"
-#include "./avl_tree/avl_tree.h"
+#include "avl.h"
+#include "bst.h"
 #include "./database/keycomparer.h"
 
 class data_collection final : protected memory_holder
 {
 
 private:
-
     memory * _allocator;
-
     associative_container<delivery_member::key*, delivery_member::value*> * _data;
 
 public:
 
-    data_collection(memory * allocator = nullptr) : _data(new bplus_tree<delivery_member::key*, delivery_member::value*, key_comparer>) {};
+    data_collection(memory * allocator = nullptr) : _data(new binary_search_tree<std::string , int, key_comparer>(
+            nullptr, nullptr)) {};
 
     ~data_collection();
 
@@ -65,10 +64,6 @@ public:
 
     data_collection & operator=(data_collection && other) noexcept;
 
-private:
-
-    memory * get_outer_allocator() const;
 
 };
-
 #endif //MAIN_CPP_DATA_COLLECTION_H

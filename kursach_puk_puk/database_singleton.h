@@ -29,13 +29,31 @@
 #include "./allocator_names/allocator_type.h"
 #include "./comparers/stdstring_comparer.h"
 
+#include "avl_tree/avl_tree.h"
+
 class database_singleton
 {
 private:
-    //TODO тут был компаратор пар
+    class stdpair_int_int_comparer final
+    {
+    private:
+        int_comparer _int_comparer;
+    public:
+        int operator()(
+                std::pair<int, int> const &left,
+                std::pair<int, int> const &right)
+        {
+            auto user_id_comparison_result = _int_comparer(left.first, right.first);
+            if (user_id_comparison_result != 0)
+            {
+                return user_id_comparison_result;
+            }
+
+            return _int_comparer(left.second, right.second);
+        }
+    };
 private:
     static database_singleton *_instance;
-    request_handler_with_command_chain _chain;
 public:
     static database_singleton *get_instance()
     {
@@ -47,24 +65,15 @@ public:
         return _instance;
     }
 private:
-    associative_container<std::string, std::pair<associative_container<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *> *, memory *> > *_database_entrypoint;
+    associative_container<std::string, associative_container<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *> * > *_database_entrypoint;
+    memory* memory;
+    logger* logger;
 private:
     database_singleton()
     {
-        _database_entrypoint = new bplus_tree<std::string, std::pair<associative_container<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *> *, memory *>, stdstring_comparer>(10);
+        _database_entrypoint = new avl_tree<std::string, associative_container<std::string, associative_container<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *> * >, stdstring_comparer>;
+        _database_entrypoint = new bplus_tree<std::string, std::pair<associative_container<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *> *, memory* >,  stdstring_comparer>(10)>;
 
-        _chain
-                .add_handler(new command_add_pool())
-                .add_handler(new command_remove_pool())
-                .add_handler(new command_add_scheme())
-                .add_handler(new command_remove_scheme())
-                .add_handler(new command_add_collection())
-                .add_handler(new command_remove_collection())
-                .add_handler(new command_add_data())
-                .add_handler(new command_remove_data())
-                .add_handler(new command_get_data())
-                .add_handler(new command_get_data_between())
-                .add_handler(new command_update_data());
 
         _instance = this;
     }
@@ -77,51 +86,6 @@ public:
     database_singleton(database_singleton &&) = delete;
     database_singleton &operator=(database_singleton const &) = delete;
     database_singleton &operator=(database_singleton &&) = delete;
-public:
-    void add_pool(
-            std::string const &pool_name,
-            allocator_type pool_allocator_type,
-            unsigned int pool_allocator_size,
-            allocator_type pool_allocator_allocation_mode)
-    {
-        try
-        {
-            memory *allocator = nullptr;
-
-            switch (pool_allocator_allocation_mode) {
-                case allocator_type::global_heap:
-                    allocator = new memory_mihuil();
-                    break;
-                case allocator_type::sorted_list:
-                    break;
-                case allocator_type::boundary_tags:
-                    break;
-                case allocator_type::buddy_system:
-                    break;
-            }
-
-            _database_entrypoint->insert(pool_name, std::move(std::make_pair(new bplus_tree<std::string, associative_container<std::string, associative_container<std::pair<int, int>, delivery_member *> *> *, stdstring_comparer>(10), allocator)));
-
-            std::cout << "[DATA BASE] pool added to data base" << std::endl << std::endl;
-        }
-        catch (std::exception const &ex)
-        {
-            std::cout << ex.what() << std::endl;
-        }
-    }
-    void add_scheme(std::string const & pool_name, std::string const & scheme_name)
-    {
-        try
-        {
-            //const_cast<pool &>(_data_base->find(pool_name)).add(scheme_name, std::move(scheme()));
-            const_cast<pool &>(_data_base->find(pool_name)).add(scheme_name, std::move(scheme()));
-            std::cout << "[DATA BASE] scheme added to " << pool_name << std::endl << std::endl;
-        }
-        catch (std::exception const &ex)
-        {
-            std::cout << ex.what() << std::endl;
-        }
-    }
 };
 
 #endif //MAIN_CPP_DATABASE_SINGLETON_H

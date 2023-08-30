@@ -334,7 +334,7 @@ private:
 public:
 
     tvalue const &find(
-            tkey const &key) override
+            tkey const &key)
     {
         auto path_info = find_path(key);
         if (!std::get<3>(path_info))
@@ -388,17 +388,200 @@ public:
             throw typename search_tree<tkey, tvalue, tkey_comparer>::removing_exception();
         }
 
-        throw not_implemented("remove");
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *current_node = this->_root;
+        unsigned int current_index;
+
+        while (!current_node->is_leaf_node()) {
+            for (current_index = 0; current_index < current_node->involved_keys; ++current_index)
+            {
+                if (key < current_node->keys_and_values[current_index].key)
+                {
+                    break;
+                }
+            }
+
+            current_node = current_node->subtrees[current_index];
+        }
+
+        for (current_index = 0; current_index < current_node->involved_keys; ++current_index)
+        {
+            if (current_node->keys_and_values[current_index].key == key)
+            {
+                remove_from_leaf_node(current_node, current_index);
+                break;
+            }
+        }
+
+        if (current_node->involved_keys >= _t - 1)
+        {
+            return;
+        }
+
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *parent = current_node->parent;
+        unsigned int parent_index = current_index;
+
+        if (parent == nullptr)
+        {
+            if (current_node->involved_keys == 0)
+            {
+                this->_root = nullptr;
+                delete current_node;
+            }
+            return;
+        }
+
+        if (parent_index != 0 && parent->subtrees[parent_index - 1]->involved_keys >= _t)
+        {
+            borrow_from_previous_sibling(current_node, parent_index);
+        }
+        else if (parent_index != parent->involved_keys && parent->subtrees[parent_index + 1]->involved_keys >= _t)
+        {
+            borrow_from_next_sibling(current_node, parent_index);
+        }
+        else
+        {
+            if (parent_index != parent->involved_keys)
+            {
+                merge_with_next_sibling(current_node, parent_index);
+                current_node = parent->subtrees[parent_index];
+            }
+            else
+            {
+                merge_with_next_sibling(parent->subtrees[parent_index - 1], parent_index - 1);
+                current_node = parent->subtrees[parent_index - 1];
+                parent_index--;
+            }
+
+            remove(key);
+        }
+
+        remove_from_internal_node(parent, parent_index);
     }
+
+
+private:
+    void remove_from_internal_node(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node, unsigned int index)
+    {
+        for (unsigned int i = index; i < node->involved_keys - 1; ++i)
+        {
+            node->keys_and_values[i] = node->keys_and_values[i + 1];
+            node->subtrees[i + 1] = node->subtrees[i + 2];
+        }
+        node->involved_keys--;
+    }
+    void remove_from_leaf_node(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node, unsigned int index)
+    {
+        for (unsigned int i = index; i < node->involved_keys - 1; ++i)
+        {
+            node->keys_and_values[i] = node->keys_and_values[i + 1];
+        }
+        node->involved_keys--;
+    }
+    void borrow_from_previous_sibling(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node, unsigned int index)
+    {
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *sibling = node->parent->subtrees[index - 1];
+
+        for (unsigned int i = node->involved_keys; i > 0; --i)
+        {
+            node->keys_and_values[i] = node->keys_and_values[i - 1];
+        }
+        if (!node->is_leaf_node())
+        {
+            for (unsigned int i = node->involved_keys + 1; i > 0; --i)
+            {
+                node->subtrees[i] = node->subtrees[i - 1];
+            }
+        }
+
+        node->keys_and_values[0] = sibling->keys_and_values[sibling->involved_keys - 1];
+        node->involved_keys++;
+        node->subtrees[0] = sibling->subtrees[sibling->involved_keys];
+
+        sibling->involved_keys--;
+    }
+    void borrow_from_next_sibling(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node, unsigned int index)
+    {
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *sibling = node->parent->subtrees[index + 1];
+
+        node->keys_and_values[node->involved_keys] = sibling->keys_and_values[0];
+        node->involved_keys++;
+        node->subtrees[node->involved_keys] = sibling->subtrees[0];
+
+        for (unsigned int i = 0; i < sibling->involved_keys - 1; ++i)
+        {
+            sibling->keys_and_values[i] = sibling->keys_and_values[i + 1];
+        }
+        if (!sibling->is_leaf_node())
+        {
+            for (unsigned int i = 0; i < sibling->involved_keys; ++i)
+            {
+                sibling->subtrees[i] = sibling->subtrees[i + 1];
+            }
+        }
+
+        sibling->involved_keys--;
+    }
+    void merge_with_next_sibling(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node, unsigned int index)
+    {
+        typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *sibling = node->parent->subtrees[index + 1];
+
+        node->keys_and_values[node->involved_keys] = sibling->keys_and_values[0];
+        node->involved_keys++;
+        node->subtrees[node->involved_keys] = sibling->subtrees[0];
+
+        for (unsigned int i = 0; i < sibling->involved_keys - 1; ++i)
+        {
+            sibling->keys_and_values[i] = sibling->keys_and_values[i + 1];
+        }
+        if (!sibling->is_leaf_node())
+        {
+            for (unsigned int i = 0; i < sibling->involved_keys; ++i)
+            {
+                sibling->subtrees[i] = sibling->subtrees[i + 1];
+            }
+        }
+
+        sibling->involved_keys--;
+
+        if (sibling->is_leaf_node())
+        {
+            node->next_leaf = sibling->next_leaf;
+        }
+        else
+        {
+            node->next_internal = sibling->next_internal;
+        }
+    }
+
+    void delete_node(typename search_tree<tkey, tvalue, tkey_comparer>::search_tree_node *node)
+    {
+        if (node != nullptr)
+        {
+            delete_node(node->subtrees[0]);
+
+            if (!node->is_leaf_node())
+            {
+                for (unsigned int i = 1; i < node->involved_keys + 1; ++i)
+                {
+                    delete_node(node->subtrees[i]);
+                }
+            }
+
+            delete node;
+        }
+    }
+
+
+
 
 private:
 
-    [[nodiscard]] inline unsigned int get_min_keys_count() const noexcept
+    inline unsigned int get_min_keys_count() const noexcept
     {
         return _t - 1;
     }
 
-    [[nodiscard]] inline unsigned int get_max_keys_count() const noexcept
+    inline unsigned int get_max_keys_count() const noexcept
     {
         return get_min_keys_count() * 2;
     }
